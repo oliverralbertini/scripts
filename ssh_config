@@ -1,0 +1,6 @@
+Host github
+     HostName github.com
+     User git
+     ControlPath ~/.ssh/controlmasters/%r@%h:%p
+     ControlMaster auto
+     ControlPersist 8h
