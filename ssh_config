@@ -3,4 +3,8 @@ Host github.com
      User git
      ControlPath ~/.ssh/controlmasters/%r@%h:%p
      ControlMaster auto
-     ControlPersist 8h
+     ControlPersist 5h
+     ServerAliveInterval 60
+     ServerAliveCountMax 6
+     Compression=yes
+     TCPKeepAlive=no
