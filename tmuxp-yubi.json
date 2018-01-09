@@ -1,0 +1,16 @@
+{
+	"windows": [
+		{
+			"panes": [
+				{
+					"shell_command": "eval \"$(curl https://raw.githubusercontent.com/oliverralbertini/scripts/master/yubishell.sh)\" && yubishell"
+				}, 
+				{
+					"shell_command": "eval \"$(curl https://raw.githubusercontent.com/oliverralbertini/scripts/master/yubigit.sh)\""
+				} 
+			], 
+			"window_name": "yubishell"
+		}
+	], 
+	"session_name": "yubi"
+}
