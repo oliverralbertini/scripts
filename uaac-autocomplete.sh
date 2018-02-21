@@ -1,18 +1,10 @@
-_target_complete_entries()
-{
-    targets=( $(uaac targets 2>/dev/null) )
-    for i in ${targets[@]}; do
-        target="${i#*https}"
-        COMPREPLY+="https${target}"
-    done
-}
-
 _uaac()
 {
     local cur prev opts
     COMPREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    # cur="${COMP_WORDS[COMP_CWORD]}"
+    # prev="${COMP_WORDS[COMP_CWORD-1]}"
+    _get_comp_words_by_ref -n : cur prev
     opts="--help --vesion --verbose --debug --config --zone -h -v -d -t -z"
     cmds="curl client clients secret groups group member users user password token target targets context contexts help version password stats signing prompts me info"
 
@@ -76,7 +68,10 @@ _uaac()
         target)
             target_opts="-f --force --no-force --ca-cert --skip-ssl-validation"
             COMPREPLY=( $(compgen -W "${target_opts}" -- ${cur}) )
-            _target_complete_entries
+            targets="$(uaac targets 2>/dev/null) | awk '{print $NF}'"
+            # targets="$(cat /tmp/test | awk '{print $NF}')"
+            COMPREPLY+=( $(compgen -W "${targets}" -- ${cur}) )
+            __ltrim_colon_completions "$cur"
             return 0
             ;;
         targets|info|me|prompts|--version|-v|version|contexts)
@@ -96,4 +91,5 @@ _uaac()
             ;;
     esac
 }
+
 complete -F _uaac uaac
