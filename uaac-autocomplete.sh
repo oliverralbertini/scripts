@@ -1,13 +1,47 @@
 _uaac()
 {
-    local cur prev opts
+    local cur prev before_prev opts cmds
     COMPREPLY=()
     # cur="${COMP_WORDS[COMP_CWORD]}"
     # prev="${COMP_WORDS[COMP_CWORD-1]}"
     _get_comp_words_by_ref -n : cur prev
+    (( ${#COMP_WORDS[@]} > 2 )) && before_prev="${COMP_WORDS[COMP_CWORD-2]}"
     opts="--help --vesion --verbose --debug --config --zone -h -v -d -t -z"
     cmds="curl client clients secret groups group member users user password token target targets context contexts help version password stats signing prompts me info"
 
+    case "${before_prev}" in
+      uaac)
+        ;;
+      client)
+        clients="$(uaac clients | awk '!/:/ {print $0}')"
+        case "${prev}" in
+          get)
+            COMPREPLY+=( $(compgen -W "${clients} -a --attributes" -- ${cur}) )
+            return 0
+            ;;
+        esac
+        ;;
+      user)
+        users="$(uaac users | grep username: | awk '{print $2}')"
+        case "${prev}" in
+          get)
+            COMPREPLY+=( $(compgen -W "${users} -a --attributes" -- ${cur}) )
+            return 0
+            ;;
+        esac
+        ;;
+      group)
+        groups="$(uaac groups | grep -v -e : -e meta -e \- -e roles)"
+        case "${prev}" in
+          get)
+            COMPREPLY+=( $(compgen -W "${groups} -a --attributes" -- ${cur}) )
+            return 0
+            ;;
+        esac
+        ;;
+      *)
+        ;;
+    esac
     case "${prev}" in
         uaac)
             ;;
@@ -69,20 +103,21 @@ _uaac()
             return 0
             ;;
         group)
-            groups="$(uaac groups 2>/dev/null) | awk '{print $NF}'"
+            groups="$(uaac groups | awk '{print $NF}')"
             COMPREPLY=( $(compgen -W "${groups}" -- ${cur}) )
             return 0
             ;;
         context)
-            contexts="$(uaac contexts 2>/dev/null) | awk '{print $NF}'"
+            contexts="$(uaac contexts | awk '{print $NF}')"
             COMPREPLY=( $(compgen -W "${contexts}" -- ${cur}) )
             return 0
             ;;
         target)
             target_opts="-f --force --no-force --ca-cert --skip-ssl-validation"
             COMPREPLY=( $(compgen -W "${target_opts}" -- ${cur}) )
-            targets="$(uaac targets 2>/dev/null) | awk '{print $NF}'"
-            # targets="$(cat /tmp/test | awk '{print $NF}')"
+            targets="$(uaac targets | awk '{print $NF}')"
+            # if there were no targets, then return
+            [[ $targets =~ "targets" ]] && return 0
             COMPREPLY+=( $(compgen -W "${targets}" -- ${cur}) )
             __ltrim_colon_completions "$cur"
             return 0
