@@ -11,7 +11,10 @@ _uaac()
     case "${prev}" in
         uaac)
             ;;
-        help)
+        --debug|-d)
+            opts="--verbose --config --zone -t -z"
+            ;;
+        --help|-h|help)
             COMPREPLY=( $(compgen -W "${cmds}" -- ${cur}) )
             return 0
             ;;
@@ -25,7 +28,7 @@ _uaac()
             COMPREPLY=( $(compgen -W "${requests}" -- ${cur}) )
             return 0
             ;;
-        clients|groups)
+        users|clients|groups)
             clients_opts="-a --attributes --start --count"
             COMPREPLY=( $(compgen -W "${clients_opts}" -- ${cur}) )
             return 0
@@ -65,6 +68,16 @@ _uaac()
             COMPREPLY=( $(compgen -W "${token_cmds}" -- ${cur}) )
             return 0
             ;;
+        group)
+            groups="$(uaac groups 2>/dev/null) | awk '{print $NF}'"
+            COMPREPLY=( $(compgen -W "${groups}" -- ${cur}) )
+            return 0
+            ;;
+        context)
+            contexts="$(uaac contexts 2>/dev/null) | awk '{print $NF}'"
+            COMPREPLY=( $(compgen -W "${contexts}" -- ${cur}) )
+            return 0
+            ;;
         target)
             target_opts="-f --force --no-force --ca-cert --skip-ssl-validation"
             COMPREPLY=( $(compgen -W "${target_opts}" -- ${cur}) )
@@ -77,6 +90,18 @@ _uaac()
         targets|info|me|prompts|--version|-v|version|contexts)
             return 0
             ;;
+        password)
+            COMPREPLY=( "strength" )
+            ;;
+        strength)
+            return 0
+            ;;
+        signing)
+            COMPREPLY=( "key" )
+            return 0
+            ;;
+        key|stats)
+            COMPREPLY=( $(compgen -W "-c --client -s --secret" -- ${cur} )
         *)
             ;;
     esac
