@@ -1,3 +1,31 @@
+__get_users() {
+    users="$(uaac users | grep username: | awk '{print $2}')"
+    COMPREPLY+=( $(compgen -W "${users}" -- ${cur}) )
+}
+
+__get_groups() {
+    groups="$(uaac groups | grep -v -e : -e meta -e \- -e roles)"
+    COMPREPLY+=( $(compgen -W "${groups}" -- ${cur}) )
+}
+
+__get_clients() {
+    clients="$(uaac clients | awk '!/:/ {print $0}')"
+    COMPREPLY+=( $(compgen -W "${clients}" -- ${cur}) )
+}
+
+__get_contexts() {
+    contexts="$(uaac contexts | awk '{print $NF}')"
+    COMPREPLY=( $(compgen -W "${contexts}" -- ${cur}) )
+}
+
+__get_targets() {
+    targets="$(uaac targets | awk '{print $NF}')"
+    # if there were no targets, then return
+    [[ $targets =~ "targets" ]] && return 0
+    COMPREPLY+=( $(compgen -W "${targets}" -- ${cur}) )
+    __ltrim_colon_completions "$cur"
+}
+
 _uaac()
 {
     local cur prev before_prev opts cmds
@@ -5,65 +33,114 @@ _uaac()
     # cur="${COMP_WORDS[COMP_CWORD]}"
     # prev="${COMP_WORDS[COMP_CWORD-1]}"
     _get_comp_words_by_ref -n : cur prev
-    (( ${#COMP_WORDS[@]} > 2 )) && before_prev="${COMP_WORDS[COMP_CWORD-2]}"
     opts="--help --vesion --verbose --debug --config --zone -h -v -d -t -z"
     cmds="curl client clients secret groups group member users user password token target targets context contexts help version password stats signing prompts me info"
 
-    case "${before_prev}" in
-        uaac)
-            ;;
-        secret)
-            if [[ $prev == "set" ]]; then
-                clients="$(uaac clients | awk '!/:/ {print $0}')"
-                COMPREPLY+=( $(compgen -W "${clients} -s --secret" -- ${cur}) )
-                return 0
-            else if [[ $prev == "change" ]]; then
-                COMPREPLY+=( $(compgen -W "-s --secret --old_secret" -- ${cur}) )
-                return 0
-            fi
-            ;;
-        client)
-            clients="$(uaac clients | awk '!/:/ {print $0}')"
-            COMPREPLY+=( $(compgen -W "${clients}" -- ${cur}) )
-            case "${prev}" in
-                add)
-                    COMPREPLY+=( $( compgen -W "--name --scope --authorized_grant_types --authorities --access_token_validity --refresh_token_validity --redirect_uri --autoapprove --signup_redirect_url --clone -s --secret -i --interactive --no-interactive" -- ${cur}) )
+    if (( ${#COMP_WORDS[@]} > 2 )); then
+        before_prev="${COMP_WORDS[COMP_CWORD-2]}"
+        case "${before_prev}" in
+            secret)
+                if [[ $prev == "set" ]]; then
+                    __get_clients
+                    COMPREPLY+=( $(compgen -W "-s --secret" -- ${cur}) )
                     return 0
-                    ;;
-                update)
-                    COMPREPLY+=( $( compgen -W "--name --scope --authorized_grant_types --authorities --access_token_validity --refresh_token_validity --redirect_uri --autoapprove --signup_redirect_url --del-attrs -i --interactive --no-interactive" -- ${cur}) )
+                elif [[ $prev == "change" ]]; then
+                    COMPREPLY+=( $(compgen -W "-s --secret --old_secret" -- ${cur}) )
                     return 0
-                    ;;
-                get)
-                    COMPREPLY+=( $(compgen -W "-a --attributes" -- ${cur}) )
+                fi
+                ;;
+            client)
+                __get_clients
+                case "${prev}" in
+                    add)
+                        COMPREPLY+=( $( compgen -W "--name --scope --authorized_grant_types --authorities --access_token_validity --refresh_token_validity --redirect_uri --autoapprove --signup_redirect_url --clone -s --secret -i --interactive --no-interactive" -- ${cur}) )
+                        return 0
+                        ;;
+                    update)
+                        COMPREPLY+=( $( compgen -W "--name --scope --authorized_grant_types --authorities --access_token_validity --refresh_token_validity --redirect_uri --autoapprove --signup_redirect_url --del-attrs -i --interactive --no-interactive" -- ${cur}) )
+                        return 0
+                        ;;
+                    get)
+                        COMPREPLY+=( $(compgen -W "-a --attributes" -- ${cur}) )
+                        return 0
+                        ;;
+                    delete)
+                        return 0
+                        ;;
+                esac
+                ;;
+            password)
+                if [[ $prev == "set" ]]; then
+                    __get_users
+                    COMPREPLY+=( $(compgen -W "-p --password" -- ${cur}) )
                     return 0
-                    ;;
-                delete)
+                elif [[ $prev == "change" ]]; then
+                    COMPREPLY+=( $(compgen -W "-p --password --old_password -o" -- ${cur}) )
                     return 0
-                    ;;
-            esac
-            ;;
-        user)
-            users="$(uaac users | grep username: | awk '{print $2}')"
-            case "${prev}" in
-                get)
-                    COMPREPLY+=( $(compgen -W "${users} -a --attributes" -- ${cur}) )
-                    return 0
-                    ;;
-            esac
-            ;;
-        group)
-            groups="$(uaac groups | grep -v -e : -e meta -e \- -e roles)"
-            case "${prev}" in
-                get)
-                    COMPREPLY+=( $(compgen -W "${groups} -a --attributes" -- ${cur}) )
-                    return 0
-                    ;;
-            esac
-            ;;
-        *)
-            ;;
-    esac
+                fi
+                ;;
+            user)
+                __get_users
+                case "${prev}" in
+                    get)
+                        COMPREPLY+=( $(compgen -W "--origin -a --attributes" -- ${cur}) )
+                        return 0
+                        ;;
+                    add)
+                        COMPREPLY+=( $(compgen -W "--given_name --family_name --emails --phones --origin -p --password" -- ${cur}) )
+                        return 0
+                        ;;
+                    update)
+                        COMPREPLY+=( $(compgen -W "--given_name --family_name --emails --phones --origin --del_attrs" -- ${cur}) )
+                        return 0
+                        ;;
+                    delete)
+                        COMPREPLY+=( $(compgen -W "--origin" -- ${cur}) )
+                        return 0
+                        ;;
+                    ids|unlock|deactivate|activate)
+                        return 0
+                        ;;
+                esac
+                ;;
+            add|delete)
+                if (( ${#COMP_WORDS[@]} > 3 )) && [[ ${COMP_WORDS[COMP_CWORDS-3]} == "member" ]]; then
+                    __get_users
+                fi
+                ;;
+            member)
+                __get_groups
+                case "${prev}" in
+                    add|delete)
+                        COMPREPLY+=( $(compgen -W "-a --attributes" -- ${cur}) )
+                        return 0
+                        ;;
+                esac
+                ;;
+            group)
+                __get_groups
+                case "${prev}" in
+                    get)
+                        COMPREPLY+=( $(compgen -W "-a --attributes" -- ${cur}) )
+                        return 0
+                        ;;
+                    add|delete)
+                        return 0
+                        ;;
+                    map)
+                        COMPREPLY+=( $(compgen -W "--id --name --origin" -- ${cur}) )
+                        return 0
+                        ;;
+                    unmap)
+                        COMPREPLY+=( $(compgen -W "--origin" -- ${cur}) )
+                        return 0
+                        ;;
+                esac
+                ;;
+            *)
+                ;;
+        esac
+    fi
     case "${prev}" in
         uaac)
             ;;
@@ -82,6 +159,10 @@ _uaac()
         -X|--request)
             requests="PUT GET POST PATCH DELETE"
             COMPREPLY=( $(compgen -W "${requests}" -- ${cur}) )
+            return 0
+            ;;
+        mappings)
+            COMPREPLY=( $(compgen -W "--start --count" -- ${cur}) )
             return 0
             ;;
         users|clients|groups)
@@ -125,23 +206,17 @@ _uaac()
             return 0
             ;;
         group)
-            groups="$(uaac groups | awk '{print $NF}')"
-            COMPREPLY=( $(compgen -W "${groups}" -- ${cur}) )
+            __get_groups
             return 0
             ;;
         context)
-            contexts="$(uaac contexts | awk '{print $NF}')"
-            COMPREPLY=( $(compgen -W "${contexts}" -- ${cur}) )
+            __get_contexts
             return 0
             ;;
         target)
             target_opts="-f --force --no-force --ca-cert --skip-ssl-validation"
             COMPREPLY=( $(compgen -W "${target_opts}" -- ${cur}) )
-            targets="$(uaac targets | awk '{print $NF}')"
-            # if there were no targets, then return
-            [[ $targets =~ "targets" ]] && return 0
-            COMPREPLY+=( $(compgen -W "${targets}" -- ${cur}) )
-            __ltrim_colon_completions "$cur"
+            __get_targets
             return 0
             ;;
         targets|info|me|prompts|--version|-v|version|contexts)
