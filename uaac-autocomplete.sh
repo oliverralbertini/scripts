@@ -10,37 +10,59 @@ _uaac()
     cmds="curl client clients secret groups group member users user password token target targets context contexts help version password stats signing prompts me info"
 
     case "${before_prev}" in
-      uaac)
-        ;;
-      client)
-        clients="$(uaac clients | awk '!/:/ {print $0}')"
-        case "${prev}" in
-          get)
-            COMPREPLY+=( $(compgen -W "${clients} -a --attributes" -- ${cur}) )
-            return 0
+        uaac)
             ;;
-        esac
-        ;;
-      user)
-        users="$(uaac users | grep username: | awk '{print $2}')"
-        case "${prev}" in
-          get)
-            COMPREPLY+=( $(compgen -W "${users} -a --attributes" -- ${cur}) )
-            return 0
+        secret)
+            if [[ $prev == "set" ]]; then
+                clients="$(uaac clients | awk '!/:/ {print $0}')"
+                COMPREPLY+=( $(compgen -W "${clients} -s --secret" -- ${cur}) )
+                return 0
+            else if [[ $prev == "change" ]]; then
+                COMPREPLY+=( $(compgen -W "-s --secret --old_secret" -- ${cur}) )
+                return 0
+            fi
             ;;
-        esac
-        ;;
-      group)
-        groups="$(uaac groups | grep -v -e : -e meta -e \- -e roles)"
-        case "${prev}" in
-          get)
-            COMPREPLY+=( $(compgen -W "${groups} -a --attributes" -- ${cur}) )
-            return 0
+        client)
+            clients="$(uaac clients | awk '!/:/ {print $0}')"
+            COMPREPLY+=( $(compgen -W "${clients}" -- ${cur}) )
+            case "${prev}" in
+                add)
+                    COMPREPLY+=( $( compgen -W "--name --scope --authorized_grant_types --authorities --access_token_validity --refresh_token_validity --redirect_uri --autoapprove --signup_redirect_url --clone -s --secret -i --interactive --no-interactive" -- ${cur}) )
+                    return 0
+                    ;;
+                update)
+                    COMPREPLY+=( $( compgen -W "--name --scope --authorized_grant_types --authorities --access_token_validity --refresh_token_validity --redirect_uri --autoapprove --signup_redirect_url --del-attrs -i --interactive --no-interactive" -- ${cur}) )
+                    return 0
+                    ;;
+                get)
+                    COMPREPLY+=( $(compgen -W "-a --attributes" -- ${cur}) )
+                    return 0
+                    ;;
+                delete)
+                    return 0
+                    ;;
+            esac
             ;;
-        esac
-        ;;
-      *)
-        ;;
+        user)
+            users="$(uaac users | grep username: | awk '{print $2}')"
+            case "${prev}" in
+                get)
+                    COMPREPLY+=( $(compgen -W "${users} -a --attributes" -- ${cur}) )
+                    return 0
+                    ;;
+            esac
+            ;;
+        group)
+            groups="$(uaac groups | grep -v -e : -e meta -e \- -e roles)"
+            case "${prev}" in
+                get)
+                    COMPREPLY+=( $(compgen -W "${groups} -a --attributes" -- ${cur}) )
+                    return 0
+                    ;;
+            esac
+            ;;
+        *)
+            ;;
     esac
     case "${prev}" in
         uaac)
@@ -137,7 +159,7 @@ _uaac()
             ;;
         key|stats)
             COMPREPLY=( $(compgen -W "-c --client -s --secret" -- ${cur} )
-        *)
+            *)
             ;;
     esac
     case "${cur}" in
