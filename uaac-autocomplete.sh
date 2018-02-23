@@ -1,25 +1,26 @@
 __get_users() {
-    users="$(uaac users | grep username: | awk '{print $2}')"
+    local users="$(uaac users | grep username: | awk '{print $2}')"
     COMPREPLY+=( $(compgen -W "${users}" -- ${cur}) )
 }
 
 __get_groups() {
-    groups="$(uaac groups | grep -v -e : -e meta -e \- -e roles)"
+    local groups="$(uaac groups | grep -v -e : -e meta -e \- -e roles)"
     COMPREPLY+=( $(compgen -W "${groups}" -- ${cur}) )
 }
 
 __get_clients() {
-    clients="$(uaac clients | awk '!/:/ {print $0}')"
+    local clients="$(uaac clients | awk '!/:/ {print $0}')"
+    [[ $clients =~ "{" ]] && return
     COMPREPLY+=( $(compgen -W "${clients}" -- ${cur}) )
 }
 
 __get_contexts() {
-    contexts="$(uaac contexts | awk '{print $NF}')"
+    local contexts="$(uaac contexts | awk '{print $NF}')"
     COMPREPLY=( $(compgen -W "${contexts}" -- ${cur}) )
 }
 
 __get_targets() {
-    targets="$(uaac targets | awk '{print $NF}')"
+    local targets="$(uaac targets | awk '{print $NF}')"
     # if there were no targets, then return
     [[ $targets =~ "targets" ]] && return 0
     COMPREPLY+=( $(compgen -W "${targets}" -- ${cur}) )
