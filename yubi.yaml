@@ -1,0 +1,11 @@
+session_name: yubi
+suppress_history: false
+windows:
+- window_name: yubigit
+  layout: tiled
+  panes:
+    - shell_command: eval $(curl https://raw.githubusercontent.com/oliverralbertini/scripts/master/yubigit.sh) && yubigit
+- window_name: yubishell
+  layout: tiled
+  panes:
+    - shell_command: eval $(curl https://raw.githubusercontent.com/oliverralbertini/scripts/master/yubishell.sh) && yubishell

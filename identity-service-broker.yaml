@@ -1,4 +1,5 @@
 session_name: local server
+suppress_history: false
 windows:
 - window_name: local server
   layout: tiled
@@ -6,9 +7,6 @@ windows:
     - cd ~/workspace/identity-service-broker
   panes:
     - shell_command: mvn spring-boot:run
-    - shell_command:
-      - cd legacy-react
-      - gulp foreman
     - shell_command:
       - cd react-dashboard
       - npm start
