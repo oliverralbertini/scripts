@@ -1,11 +1,20 @@
 # http://cli.cloudfoundry.org/en-US/cf/
 __get_spaces() {
-  local spaces=$(CF_COLOR=false cf spaces)
+  local spaces=$(CF_COLOR=false cf spaces 2>/dev/null)
+  [[ $spaces =~ "FAILED" ]] && return
   COMPREPLY+=( $(compgen -W "$(echo "$spaces" | awk '!/^(Getting.*)?(OK)?(name.*)?$/ {print $1}')" -- ${cur}) )
 }
 
+__get_spaces_in_org() {
+  org="$1"
+  local spaces=$(CF_COLOR=false cf org $org 2>/dev/null)
+  [[ $spaces =~ "FAILED" ]] && return
+  COMPREPLY+=( $(compgen -W "$(echo "$spaces" | grep spaces | cut -d':' -f2 | sed -e 's/,//g')" -- ${cur}) )
+}
+
 __get_orgs() {
-  local orgs=$(CF_COLOR=false cf orgs)
+  local orgs=$(CF_COLOR=false cf orgs 2>/dev/null)
+  [[ $orgs =~ "FAILED" ]] && return
   COMPREPLY+=( $(compgen -W "$(echo "$orgs" | awk '!/^(Getting.*)?(OK)?(name.*)?$/ {print $1}')" -- ${cur}) )
 }
 
@@ -19,89 +28,129 @@ __get_apps() {
 __get_tasks() {
   local tasks=$(CF_COLOR=false cf tasks)
     # if [[ $tasks =~ "OK" ]] && ! [[ $tasks =~ "No apps found" ]]; then
-      COMPREPLY+=( $(compgen -W "$(echo "$tasks" | awk '!/^(Getting.*)?(OK)?(name.*)?$/ {print $1}')" -- ${cur}) )
-    fi
+      # COMPREPLY+=( $(compgen -W "$(echo "$tasks" | awk '!/^(Getting.*)?(OK)?(name.*)?$/ {print $1}')" -- ${cur}) )
+    # fi
 }
 
 __get_files() {
+  local files
 }
 
 __get_offerings() {
+  local offerings
 }
 
 __get_envs() {
+  local envs
 }
 
 __get_stacks() {
+  local stacks
 }
 
 __get_services() {
+  local services
 }
 
 __get_domains() {
+  local domains=$(CF_COLOR=false cf domains 2>/dev/null)
+  COMPREPLY+=( $(compgen -W "$(echo "$domains" | awk '!/^(Getting.*)?(OK)?(name.*)?$/ {print $1}')" -- ${cur}) )
 }
 
 __get_router_groups() {
+  local router_groups
 }
 
 __get_routes() {
+  local routes
 }
 
 __get_network_policies() {
+  local network_policies
 }
 
 __get_buildpacks() {
+  local buildpacks
 }
 
 __get_org_users() {
+  local org_users
 }
 
 __get_space_users() {
+  local space_users
 }
 
 __get_quotas() {
+  local quotas=$(CF_COLOR=false cf quotas 2>/dev/null)
+  COMPREPLY+=( $(compgen -W "$(echo "$quotas" | awk '!/^(Getting.*)?(OK)?(name.*)?$/ {print $1}')" -- ${cur}) )
 }
 
 __get_space_quotas() {
+  local space_quotas
 }
 
 __get_service_auth_tokens() {
+  local service_auth_tokens
 }
 
 __get_service_brokers() {
+  local service_brokers
 }
 
 __get_space_quotas() {
+  local space_quotas
 }
 
 __get_security_groups() {
+  local security_groups
 }
 
 __get_staging_security_groups() {
+  local staging_security_groups
 }
 
 __get_running_security_groups() {
+  local running_security_groups
 }
 
 __get_isolation_segments() {
+  local isolation_segments
 }
 
 __get_feature_flags() {
+  local feature_flags=$(CF_COLOR=false cf feature-flags 2>/dev/null)
+  COMPREPLY+=( $(compgen -W "$(echo "$feature_flags" | awk '!/^(Retrieving.*)?(OK)?(features.*)?$/ {print $1}')" -- ${cur}) )
+}
+
+__get_enabled_feature_flags() {
+  local feature_flags=$(CF_COLOR=false cf feature-flags 2>/dev/null | grep "enabled")
+  COMPREPLY+=( $(compgen -W "$(echo "$feature_flags" | awk '!/^(Retrieving.*)?(OK)?(features.*)?$/ {print $1}')" -- ${cur}) )
+}
+
+__get_disabled_feature_flags() {
+  local feature_flags=$(CF_COLOR=false cf feature-flags 2>/dev/null | grep "disabled")
+  COMPREPLY+=( $(compgen -W "$(echo "$feature_flags" | awk '!/^(Retrieving.*)?(OK)?(features.*)?$/ {print $1}')" -- ${cur}) )
 }
 
 __get_plugin_repos() {
+  local plugin_repos
 }
 
 __get_plugins() {
+  local plugins
 }
 
 __get_v3_apps() {
+  local v3_apps
 }
 
 __get_v3_droplets() {
+  local v3_droplets
 }
 
 __get_v3_packages() {
+  local v3_packages
 }
 
 _cf() {
@@ -116,6 +165,10 @@ _cf() {
   if (( ${#COMP_WORDS[@]} > 2 )); then
     before_prev="${COMP_WORDS[COMP_CWORD-2]}"
     case "${before_prev}" in
+      space-users)
+        __get_spaces_in_org "$prev"
+        return 0
+        ;;
       target)
         case "${prev}" in
           -o)
@@ -131,12 +184,36 @@ _cf() {
     esac
   fi
   case "${prev}" in
+    login)
+      COMPREPLY=( $(compgen -W "-u -p --skip-ssl-validation --sso -a" -- ${cur}) )
+      return 0
+      ;;
     app)
       COMPREPLY=( $(compgen -W "push scale delete rename start stop retart restage" -- ${cur}) )
       return 0
       ;;
+    disable-feature-flag)
+      __get_enabled_feature_flags
+      return 0
+      ;;
+    enable-feature-flag)
+      __get_disabled_feature_flags
+      return 0
+      ;;
+    feature-flag)
+      __get_feature_flags
+      return 0
+      ;;
     target)
       COMPREPLY=( $(compgen -W "${target_opts}" -- ${cur}) )
+      return 0
+      ;;
+    org-users|space-users)
+      __get_orgs
+      return 0
+      ;;
+    set-env|restage)
+      __get_apps
       return 0
       ;;
     push|scale|delete|rename|start|stop|retart|restage)
