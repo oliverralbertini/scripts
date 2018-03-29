@@ -5,6 +5,7 @@ windows:
   layout: tiled
   panes:
     - shell_command: eval $(curl https://raw.githubusercontent.com/oliverralbertini/scripts/master/yubigit.sh) && yubigit
+    - shell_command: eval $(curl https://raw.githubusercontent.com/oliverralbertini/scripts/master/lpass-function.sh)
 - window_name: yubishell
   layout: tiled
   panes:

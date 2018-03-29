@@ -2,7 +2,7 @@ lpass ()
 {
     ! [[ $1 == login ]] && {
         command lpass "$@";
-        return
+        return;
     };
     local pau_time current_time LPASS_AGENT_TIMEOUT;
     if [[ $(uname) == [Ll]inux ]]; then
