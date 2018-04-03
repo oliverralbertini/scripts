@@ -188,8 +188,8 @@ _cf() {
       COMPREPLY=( $(compgen -W "-u -p --skip-ssl-validation --sso -a" -- ${cur}) )
       return 0
       ;;
-    app)
-      COMPREPLY=( $(compgen -W "push scale delete rename start stop retart restage" -- ${cur}) )
+    api)
+      COMPREPLY=( $(compgen -W "--unset --skip-ssl-validation" -- ${cur}) )
       return 0
       ;;
     disable-feature-flag)
@@ -212,12 +212,17 @@ _cf() {
       __get_orgs
       return 0
       ;;
-    set-env|restage)
+    set-env|restage|files|app|push|scale|delete|rename|start|stop|retart|restage)
       __get_apps
       return 0
       ;;
-    push|scale|delete|rename|start|stop|retart|restage)
-      __get_apps
+    -p)
+      case "${COMP_WORDS[1]}" in
+        push|create-app-manifest|create-user-provided-service|update-user-provided-service|update-buildpack|v3-create-package|v3-push)
+          # just default (files)
+          COMPREPLY=()
+          ;;
+      esac
       return 0
       ;;
   esac
@@ -233,4 +238,4 @@ _cf() {
   esac
 }
 
-complete -F _cf cf
+complete -o default -F _cf cf

@@ -1,0 +1,2300 @@
+NAME:
+   help - Show help
+
+USAGE:
+   cf help [COMMAND]
+
+ALIAS:
+   h
+
+OPTIONS:
+   -a      All available CLI commands
+NAME:
+   version - Print the version
+
+USAGE:
+   cf version
+
+   'cf -v' and 'cf --version' are also accepted.
+NAME:
+   login - Log user in
+
+USAGE:
+   cf login [-a API_URL] [-u USERNAME] [-p PASSWORD] [-o ORG] [-s SPACE] [--sso | --sso-passcode PASSCODE]
+
+WARNING:
+   Providing your password as a command line option is highly discouraged
+   Your password may be visible to others and may be recorded in your shell history
+
+EXAMPLES:
+   cf login (omit username and password to login interactively -- cf will prompt for both)
+   cf login -u name@example.com -p pa55woRD (specify username and password as arguments)
+   cf login -u name@example.com -p "my password" (use quotes for passwords with a space)
+   cf login -u name@example.com -p "\"password\"" (escape quotes if used in password)
+   cf login --sso (cf will provide a url to obtain a one-time passcode to login)
+
+ALIAS:
+   l
+
+OPTIONS:
+   -a                         API endpoint (e.g. https://api.example.com)
+   -o                         Org
+   -p                         Password
+   -s                         Space
+   --skip-ssl-validation      Skip verification of the API endpoint. Not recommended!
+   --sso                      Prompt for a one-time passcode to login
+   --sso-passcode             One-time passcode
+   -u                         Username
+
+SEE ALSO:
+   api, auth, target
+NAME:
+   logout - Log user out
+
+USAGE:
+   cf logout
+
+ALIAS:
+   lo
+NAME:
+   passwd - Change user password
+
+USAGE:
+   cf passwd
+
+ALIAS:
+   pw
+NAME:
+   target - Set or view the targeted org or space
+
+USAGE:
+   cf target [-o ORG] [-s SPACE]
+
+ALIAS:
+   t
+
+OPTIONS:
+   -o      Organization
+   -s      Space
+
+SEE ALSO:
+   create-org, create-space, login, orgs, spaces
+NAME:
+   api - Set or view target api url
+
+USAGE:
+   cf api [URL]
+
+OPTIONS:
+   --skip-ssl-validation      Skip verification of the API endpoint. Not recommended!
+   --unset                    Remove all api endpoint targeting
+
+SEE ALSO:
+   auth, login, target
+NAME:
+   auth - Authenticate user non-interactively
+
+USAGE:
+   cf auth USERNAME PASSWORD
+
+WARNING:
+   Providing your password as a command line option is highly discouraged
+   Your password may be visible to others and may be recorded in your shell history
+
+EXAMPLES:
+   cf auth name@example.com "my password" (use quotes for passwords with a space)
+   cf auth name@example.com "\"password\"" (escape quotes if used in password)
+
+SEE ALSO:
+   api, login, target
+NAME:
+   apps - List all apps in the target space
+
+USAGE:
+   cf apps
+
+ALIAS:
+   a
+
+SEE ALSO:
+   events, logs, map-route, push, restart, scale, start, stop
+NAME:
+   app - Display health and status for an app
+
+USAGE:
+   cf app APP_NAME
+
+OPTIONS:
+   --guid      Retrieve and display the given app's guid.  All other health and status output for the app is suppressed.
+
+SEE ALSO:
+   apps, events, logs, map-route, push, unmap-route
+NAME:
+   push - Push a new app or sync changes to an existing app
+
+USAGE:
+   cf push APP_NAME [-b BUILDPACK_NAME] [-c COMMAND] [-f MANIFEST_PATH | --no-manifest] [--no-start]
+   [-i NUM_INSTANCES] [-k DISK] [-m MEMORY] [-p PATH] [-s STACK] [-t HEALTH_TIMEOUT] [-u (process | port | http)]
+   [--no-route | --random-route | --hostname HOST | --no-hostname] [-d DOMAIN] [--route-path ROUTE_PATH]
+
+   cf push APP_NAME --docker-image [REGISTRY_HOST:PORT/]IMAGE[:TAG] [--docker-username USERNAME]
+   [-c COMMAND] [-f MANIFEST_PATH | --no-manifest] [--no-start]
+   [-i NUM_INSTANCES] [-k DISK] [-m MEMORY] [-t HEALTH_TIMEOUT] [-u (process | port | http)]
+   [--no-route | --random-route | --hostname HOST | --no-hostname] [-d DOMAIN] [--route-path ROUTE_PATH]
+
+   cf push -f MANIFEST_WITH_MULTIPLE_APPS_PATH [APP_NAME] [--no-start]
+
+ALIAS:
+   p
+
+OPTIONS:
+   -b                           Custom buildpack by name (e.g. my-buildpack) or Git URL (e.g. 'https://github.com/cloudfoundry/java-buildpack.git') or Git URL with a branch or tag (e.g. 'https://github.com/cloudfoundry/java-buildpack.git#v3.3.0' for 'v3.3.0' tag). To use built-in buildpacks only, specify 'default' or 'null'
+   -c                           Startup command, set to null to reset to default start command
+   -d                           Domain (e.g. example.com)
+   --docker-image, -o           Docker-image to be used (e.g. user/docker-image-name)
+   --docker-username            Repository username; used with password from environment variable CF_DOCKER_PASSWORD
+   -f                           Path to manifest
+   --health-check-type, -u      Application health check type (Default: 'port', 'none' accepted for 'process', 'http' implies endpoint '/')
+   --hostname, -n               Hostname (e.g. my-subdomain)
+   -i                           Number of instances
+   -k                           Disk limit (e.g. 256M, 1024M, 1G)
+   -m                           Memory limit (e.g. 256M, 1024M, 1G)
+   --no-hostname                Map the root domain to this app
+   --no-manifest                Ignore manifest file
+   --no-route                   Do not map a route to this app and remove routes from previous pushes of this app
+   --no-start                   Do not start an app after pushing
+   -p                           Path to app directory or to a zip file of the contents of the app directory
+   --random-route               Create a random route for this app
+   --route-path                 Path for the route
+   -s                           Stack to use (a stack is a pre-built file system, including an operating system, that can run apps)
+   -t                           Time (in seconds) allowed to elapse between starting up an app and the first healthy response from the app
+
+ENVIRONMENT:
+   CF_STAGING_TIMEOUT=15        Max wait time for buildpack staging, in minutes
+   CF_STARTUP_TIMEOUT=5         Max wait time for app instance startup, in minutes
+   CF_DOCKER_PASSWORD=          Password used for private docker repository
+
+SEE ALSO:
+   apps, create-app-manifest, logs, ssh, start
+NAME:
+   scale - Change or view the instance count, disk space limit, and memory limit for an app
+
+USAGE:
+   cf scale APP_NAME [-i INSTANCES] [-k DISK] [-m MEMORY] [-f]
+
+OPTIONS:
+   -f      Force restart of app without prompt
+   -i      Number of instances
+   -k      Disk limit (e.g. 256M, 1024M, 1G)
+   -m      Memory limit (e.g. 256M, 1024M, 1G)
+
+SEE ALSO:
+   push
+NAME:
+   delete - Delete an app
+
+USAGE:
+   cf delete APP_NAME [-r] [-f]
+
+ALIAS:
+   d
+
+OPTIONS:
+   -f      Force deletion without confirmation
+   -r      Also delete any mapped routes
+
+SEE ALSO:
+   apps, scale, stop
+NAME:
+   rename - Rename an app
+
+USAGE:
+   cf rename APP_NAME NEW_APP_NAME
+
+SEE ALSO:
+   apps, delete
+NAME:
+   start - Start an app
+
+USAGE:
+   cf start APP_NAME
+
+ALIAS:
+   st
+
+ENVIRONMENT:
+   CF_STAGING_TIMEOUT=15        Max wait time for buildpack staging, in minutes
+   CF_STARTUP_TIMEOUT=5         Max wait time for app instance startup, in minutes
+
+SEE ALSO:
+   apps, logs, restart, run-task, scale, ssh, stop
+NAME:
+   stop - Stop an app
+
+USAGE:
+   cf stop APP_NAME
+
+ALIAS:
+   sp
+
+SEE ALSO:
+   restart, scale, start
+NAME:
+   restart - Stop all instances of the app, then start them again. This causes downtime.
+
+USAGE:
+   cf restart APP_NAME
+
+ALIAS:
+   rs
+
+ENVIRONMENT:
+   CF_STAGING_TIMEOUT=15        Max wait time for buildpack staging, in minutes
+   CF_STARTUP_TIMEOUT=5         Max wait time for app instance startup, in minutes
+
+SEE ALSO:
+   restage, restart-app-instance
+NAME:
+   restage - Recreate the app's executable artifact using the latest pushed app files and the latest environment (variables, service bindings, buildpack, stack, etc.)
+
+USAGE:
+   cf restage APP_NAME
+
+ALIAS:
+   rg
+
+ENVIRONMENT:
+   CF_STAGING_TIMEOUT=15        Max wait time for buildpack staging, in minutes
+   CF_STARTUP_TIMEOUT=5         Max wait time for app instance startup, in minutes
+
+SEE ALSO:
+   restart
+NAME:
+   restart-app-instance - Terminate, then restart an app instance
+
+USAGE:
+   cf restart-app-instance APP_NAME INDEX
+
+SEE ALSO:
+   restart
+NAME:
+   run-task - Run a one-off task on an app
+
+USAGE:
+   cf run-task APP_NAME COMMAND [-k DISK] [-m MEMORY] [--name TASK_NAME]
+
+TIP:
+   Use 'cf logs' to display the logs of the app and all its tasks. If your task name is unique, grep this command's output for the task name to view task-specific logs.
+
+EXAMPLES:
+   cf run-task my-app "bundle exec rake db:migrate" --name migrate
+
+ALIAS:
+   rt
+
+OPTIONS:
+   -k          Disk limit (e.g. 256M, 1024M, 1G)
+   -m          Memory limit (e.g. 256M, 1024M, 1G)
+   --name      Name to give the task (generated if omitted)
+
+SEE ALSO:
+   logs, tasks, terminate-task
+NAME:
+   tasks - List tasks of an app
+
+USAGE:
+   cf tasks APP_NAME
+
+SEE ALSO:
+   apps, logs, run-task, terminate-task
+NAME:
+   terminate-task - Terminate a running task of an app
+
+USAGE:
+   cf terminate-task APP_NAME TASK_ID
+
+EXAMPLES:
+   cf terminate-task my-app 3
+
+SEE ALSO:
+   tasks
+NAME:
+   events - Show recent app events
+
+USAGE:
+   cf events APP_NAME
+NAME:
+   files - Print out a list of files in a directory or the contents of a specific file of an app running on the DEA backend
+
+USAGE:
+   cf files APP_NAME [PATH] [-i INSTANCE]
+
+TIP:
+   To list and inspect files of an app running on the Diego backend, use 'cf ssh'
+
+ALIAS:
+   f
+
+OPTIONS:
+   -i      Instance
+
+SEE ALSO:
+   ssh
+NAME:
+   logs - Tail or show recent logs for an app
+
+USAGE:
+   cf logs APP_NAME
+
+OPTIONS:
+   --recent      Dump recent logs instead of tailing
+
+SEE ALSO:
+   app, apps, ssh
+NAME:
+   env - Show all env variables for an app
+
+USAGE:
+   cf env APP_NAME
+
+ALIAS:
+   e
+
+SEE ALSO:
+   app, apps, running-environment-variable-group, set-env, staging-environment-variable-group, unset-env
+NAME:
+   set-env - Set an env variable for an app
+
+USAGE:
+   cf set-env APP_NAME ENV_VAR_NAME ENV_VAR_VALUE
+
+ALIAS:
+   se
+
+SEE ALSO:
+   apps, env, restart, set-running-environment-variable-group, set-staging-environment-variable-group, unset-env
+NAME:
+   unset-env - Remove an env variable
+
+USAGE:
+   cf unset-env APP_NAME ENV_VAR_NAME
+
+SEE ALSO:
+   apps, env, restart, set-running-environment-variable-group, set-staging-environment-variable-group
+NAME:
+   stacks - List all stacks (a stack is a pre-built file system, including an operating system, that can run apps)
+
+USAGE:
+   cf stacks
+
+SEE ALSO:
+   app, push
+NAME:
+   stack - Show information for a stack (a stack is a pre-built file system, including an operating system, that can run apps)
+
+USAGE:
+   cf stack STACK_NAME
+
+OPTIONS:
+   --guid      Retrieve and display the given stack's guid. All other output for the stack is suppressed.
+
+SEE ALSO:
+   app, push, stacks
+NAME:
+   copy-source - Copies the source code of an application to another existing application (and restarts that application)
+
+USAGE:
+   cf copy-source SOURCE_APP TARGET_APP [-s TARGET_SPACE [-o TARGET_ORG]] [--no-restart]
+
+OPTIONS:
+   --no-restart      Override restart of the application in target environment after copy-source completes
+   -o                Org that contains the target application
+   -s                Space that contains the target application
+
+ENVIRONMENT:
+   CF_STAGING_TIMEOUT=15        Max wait time for buildpack staging, in minutes
+   CF_STARTUP_TIMEOUT=5         Max wait time for app instance startup, in minutes
+
+SEE ALSO:
+   apps, push, restart, target
+NAME:
+   create-app-manifest - Create an app manifest for an app that has been pushed successfully
+
+USAGE:
+   cf create-app-manifest APP_NAME [-p /path/to/<app-name>_manifest.yml]
+
+OPTIONS:
+   -p      Specify a path for file creation. If path not specified, manifest file is created in current working directory.
+
+SEE ALSO:
+   apps, push
+NAME:
+   get-health-check - Show the type of health check performed on an app
+
+USAGE:
+   cf get-health-check APP_NAME
+NAME:
+   set-health-check - Change type of health check performed on an app
+
+USAGE:
+   cf set-health-check APP_NAME (process | port | http [--endpoint PATH])
+
+TIP: 'none' has been deprecated but is accepted for 'process'.
+
+EXAMPLES:
+   cf set-health-check worker-app process
+   cf set-health-check my-web-app http --endpoint /foo
+
+OPTIONS:
+   --endpoint      Path on the app (Default: /)
+NAME:
+   enable-ssh - Enable ssh for the application
+
+USAGE:
+   cf enable-ssh APP_NAME
+
+SEE ALSO:
+   allow-space-ssh, space-ssh-allowed, ssh, ssh-enabled
+NAME:
+   disable-ssh - Disable ssh for the application
+
+USAGE:
+   cf disable-ssh APP_NAME
+
+SEE ALSO:
+   disallow-space-ssh, space-ssh-allowed, ssh, ssh-enabled
+NAME:
+   ssh-enabled - Reports whether SSH is enabled on an application container instance
+
+USAGE:
+   cf ssh-enabled APP_NAME
+
+SEE ALSO:
+   enable-ssh, space-ssh-allowed, ssh
+NAME:
+   ssh - SSH to an application container instance
+
+USAGE:
+   cf ssh APP_NAME [-i INDEX] [-c COMMAND]... [-L [BIND_ADDRESS:]PORT:HOST:HOST_PORT] [--skip-host-validation] [--skip-remote-execution] [--disable-pseudo-tty | --force-pseudo-tty | --request-pseudo-tty]
+
+OPTIONS:
+   --app-instance-index, -i         Application instance index (Default: 0)
+   --command, -c                    Command to run. This flag can be defined more than once.
+   --disable-pseudo-tty, -T         Disable pseudo-tty allocation
+   --force-pseudo-tty               Force pseudo-tty allocation
+   -L                               Local port forward specification. This flag can be defined more than once.
+   --request-pseudo-tty, -t         Request pseudo-tty allocation
+   --skip-host-validation, -k       Skip host key validation
+   --skip-remote-execution, -N      Do not execute a remote command
+
+SEE ALSO:
+   allow-space-ssh, enable-ssh, space-ssh-allowed, ssh-code, ssh-enabled
+NAME:
+   marketplace - List available offerings in the marketplace
+
+USAGE:
+   cf marketplace [-s SERVICE]
+
+ALIAS:
+   m
+
+OPTIONS:
+   -s      Show plan details for a particular service offering
+
+SEE ALSO:
+   create-service, services
+NAME:
+   services - List all service instances in the target space
+
+USAGE:
+   cf services
+
+ALIAS:
+   s
+
+SEE ALSO:
+   create-service, marketplace
+NAME:
+   service - Show service instance info
+
+USAGE:
+   cf service SERVICE_INSTANCE
+
+OPTIONS:
+   --guid      Retrieve and display the given service's guid. All other output for the service is suppressed.
+
+SEE ALSO:
+   bind-service, rename-service, update-service
+NAME:
+   create-service - Create a service instance
+
+USAGE:
+   cf create-service SERVICE PLAN SERVICE_INSTANCE [-c PARAMETERS_AS_JSON] [-t TAGS]
+
+   Optionally provide service-specific configuration parameters in a valid JSON object in-line:
+
+   cf create-service SERVICE PLAN SERVICE_INSTANCE -c '{"name":"value","name":"value"}'
+
+   Optionally provide a file containing service-specific configuration parameters in a valid JSON object.
+   The path to the parameters file can be an absolute or relative path to a file:
+
+   cf create-service SERVICE PLAN SERVICE_INSTANCE -c PATH_TO_FILE
+
+   Example of valid JSON object:
+   {
+      "cluster_nodes": {
+         "count": 5,
+         "memory_mb": 1024
+      }
+   }
+
+TIP:
+   Use 'cf create-user-provided-service' to make user-provided services available to CF apps
+
+EXAMPLES:
+   Linux/Mac:
+      cf create-service db-service silver mydb -c '{"ram_gb":4}'
+
+   Windows Command Line:
+      cf create-service db-service silver mydb -c "{\"ram_gb\":4}"
+
+   Windows PowerShell:
+      cf create-service db-service silver mydb -c '{\"ram_gb\":4}'
+
+   cf create-service db-service silver mydb -c ~/workspace/tmp/instance_config.json
+
+   cf create-service db-service silver mydb -t "list, of, tags"
+
+ALIAS:
+   cs
+
+OPTIONS:
+   -c      Valid JSON object containing service-specific configuration parameters, provided either in-line or in a file. For a list of supported configuration parameters, see documentation for the particular service offering.
+   -t      User provided tags
+
+SEE ALSO:
+   bind-service, create-user-provided-service, marketplace, services
+NAME:
+   update-service - Update a service instance
+
+USAGE:
+   cf update-service SERVICE_INSTANCE [-p NEW_PLAN] [-c PARAMETERS_AS_JSON] [-t TAGS]
+
+   Optionally provide service-specific configuration parameters in a valid JSON object in-line.
+   cf update-service -c '{"name":"value","name":"value"}'
+
+   Optionally provide a file containing service-specific configuration parameters in a valid JSON object. 
+   The path to the parameters file can be an absolute or relative path to a file.
+   cf update-service -c PATH_TO_FILE
+
+   Example of valid JSON object:
+   {
+      "cluster_nodes": {
+         "count": 5,
+         "memory_mb": 1024
+      }
+   }
+
+   Optionally provide a list of comma-delimited tags that will be written to the VCAP_SERVICES environment variable for any bound applications.
+
+EXAMPLES:
+   cf update-service mydb -p gold
+   cf update-service mydb -c '{"ram_gb":4}'
+   cf update-service mydb -c ~/workspace/tmp/instance_config.json
+   cf update-service mydb -t "list, of, tags"
+
+OPTIONS:
+   -c      Valid JSON object containing service-specific configuration parameters, provided either in-line or in a file. For a list of supported configuration parameters, see documentation for the particular service offering.
+   -p      Change service plan for a service instance
+   -t      User provided tags
+
+SEE ALSO:
+   rename-service, services, update-user-provided-service
+NAME:
+   delete-service - Delete a service instance
+
+USAGE:
+   cf delete-service SERVICE_INSTANCE [-f]
+
+ALIAS:
+   ds
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   services, unbind-service
+NAME:
+   rename-service - Rename a service instance
+
+USAGE:
+   cf rename-service SERVICE_INSTANCE NEW_SERVICE_INSTANCE
+
+SEE ALSO:
+   services, update-service
+NAME:
+   create-service-key - Create key for a service instance
+
+USAGE:
+   cf create-service-key SERVICE_INSTANCE SERVICE_KEY [-c PARAMETERS_AS_JSON]
+
+   Optionally provide service-specific configuration parameters in a valid JSON object in-line.
+   cf create-service-key SERVICE_INSTANCE SERVICE_KEY -c '{"name":"value","name":"value"}'
+
+   Optionally provide a file containing service-specific configuration parameters in a valid JSON object. The path to the parameters file can be an absolute or relative path to a file.
+   cf create-service-key SERVICE_INSTANCE SERVICE_KEY -c PATH_TO_FILE
+
+   Example of valid JSON object:
+   {
+      "permissions": "read-only"
+   }
+
+EXAMPLES:
+   cf create-service-key mydb mykey -c '{"permissions":"read-only"}'
+   cf create-service-key mydb mykey -c ~/workspace/tmp/instance_config.json
+
+ALIAS:
+   csk
+
+OPTIONS:
+   -c      Valid JSON object containing service-specific configuration parameters, provided either in-line or in a file. For a list of supported configuration parameters, see documentation for the particular service offering.
+
+SEE ALSO:
+   service-key
+NAME:
+   service-keys - List keys for a service instance
+
+USAGE:
+   cf service-keys SERVICE_INSTANCE
+
+EXAMPLES:
+   cf service-keys mydb
+
+ALIAS:
+   sk
+
+SEE ALSO:
+   delete-service-key
+NAME:
+   service-key - Show service key info
+
+USAGE:
+   cf service-key SERVICE_INSTANCE SERVICE_KEY
+
+EXAMPLES:
+   cf service-key mydb mykey
+
+OPTIONS:
+   --guid      Retrieve and display the given service-key's guid.  All other output for the service is suppressed.
+NAME:
+   delete-service-key - Delete a service key
+
+USAGE:
+   cf delete-service-key SERVICE_INSTANCE SERVICE_KEY [-f]
+
+EXAMPLES:
+   cf delete-service-key mydb mykey
+
+ALIAS:
+   dsk
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   service-keys
+NAME:
+   bind-service - Bind a service instance to an app
+
+USAGE:
+   cf bind-service APP_NAME SERVICE_INSTANCE [-c PARAMETERS_AS_JSON]
+
+   Optionally provide service-specific configuration parameters in a valid JSON object in-line:
+
+   cf bind-service APP_NAME SERVICE_INSTANCE -c '{"name":"value","name":"value"}'
+
+   Optionally provide a file containing service-specific configuration parameters in a valid JSON object. 
+   The path to the parameters file can be an absolute or relative path to a file.
+   cf bind-service APP_NAME SERVICE_INSTANCE -c PATH_TO_FILE
+
+   Example of valid JSON object:
+   {
+      "permissions": "read-only"
+   }
+
+EXAMPLES:
+   Linux/Mac:
+      cf bind-service myapp mydb -c '{"permissions":"read-only"}'
+
+   Windows Command Line:
+      cf bind-service myapp mydb -c "{\"permissions\":\"read-only\"}"
+
+   Windows PowerShell:
+      cf bind-service myapp mydb -c '{\"permissions\":\"read-only\"}'
+
+   cf bind-service myapp mydb -c ~/workspace/tmp/instance_config.json
+
+ALIAS:
+   bs
+
+OPTIONS:
+   -c      Valid JSON object containing service-specific configuration parameters, provided either in-line or in a file. For a list of supported configuration parameters, see documentation for the particular service offering.
+
+SEE ALSO:
+   services
+NAME:
+   unbind-service - Unbind a service instance from an app
+
+USAGE:
+   cf unbind-service APP_NAME SERVICE_INSTANCE
+
+ALIAS:
+   us
+
+SEE ALSO:
+   apps, delete-service, services
+NAME:
+   bind-route-service - Bind a service instance to an HTTP route
+
+USAGE:
+   cf bind-route-service DOMAIN SERVICE_INSTANCE [--hostname HOSTNAME] [--path PATH] [-c PARAMETERS_AS_JSON]
+
+EXAMPLES:
+   cf bind-route-service example.com myratelimiter --hostname myapp --path foo
+   cf bind-route-service example.com myratelimiter -c file.json
+   cf bind-route-service example.com myratelimiter -c '{"valid":"json"}'
+
+   In Windows PowerShell use double-quoted, escaped JSON: "{\"valid\":\"json\"}"
+   In Windows Command Line use single-quoted, escaped JSON: '{\"valid\":\"json\"}'
+
+ALIAS:
+   brs
+
+OPTIONS:
+   -c                  Valid JSON object containing service-specific configuration parameters, provided inline or in a file. For a list of supported configuration parameters, see documentation for the particular service offering.
+   --hostname, -n      Hostname used in combination with DOMAIN to specify the route to bind
+   --path              Path used in combination with HOSTNAME and DOMAIN to specify the route to bind
+
+SEE ALSO:
+   routes, services
+NAME:
+   unbind-route-service - Unbind a service instance from an HTTP route
+
+USAGE:
+   cf unbind-route-service DOMAIN SERVICE_INSTANCE [--hostname HOSTNAME] [--path PATH] [-f]
+
+EXAMPLES:
+   cf unbind-route-service example.com myratelimiter --hostname myapp --path foo
+
+ALIAS:
+   urs
+
+OPTIONS:
+   -f                  Force unbinding without confirmation
+   --hostname, -n      Hostname used in combination with DOMAIN to specify the route to unbind
+   --path              Path used in combination with HOSTNAME and DOMAIN to specify the route to unbind
+
+SEE ALSO:
+   delete-service, routes, services
+NAME:
+   create-user-provided-service - Make a user-provided service instance available to CF apps
+
+USAGE:
+   cf create-user-provided-service SERVICE_INSTANCE [-p CREDENTIALS] [-l SYSLOG_DRAIN_URL] [-r ROUTE_SERVICE_URL]
+
+   Pass comma separated credential parameter names to enable interactive mode:
+   cf create-user-provided-service SERVICE_INSTANCE -p "comma, separated, parameter, names"
+
+   Pass credential parameters as JSON to create a service non-interactively:
+   cf create-user-provided-service SERVICE_INSTANCE -p '{"key1":"value1","key2":"value2"}'
+
+   Specify a path to a file containing JSON:
+   cf create-user-provided-service SERVICE_INSTANCE -p PATH_TO_FILE
+
+EXAMPLES:
+   cf create-user-provided-service my-db-mine -p "username, password"
+   cf create-user-provided-service my-db-mine -p /path/to/credentials.json
+   cf create-user-provided-service my-drain-service -l syslog://example.com
+   cf create-user-provided-service my-route-service -r https://example.com
+
+   Linux/Mac:
+      cf create-user-provided-service my-db-mine -p '{"username":"admin","password":"pa55woRD"}'
+
+   Windows Command Line:
+      cf create-user-provided-service my-db-mine -p "{\"username\":\"admin\",\"password\":\"pa55woRD\"}"
+
+   Windows PowerShell:
+      cf create-user-provided-service my-db-mine -p '{\"username\":\"admin\",\"password\":\"pa55woRD\"}'
+
+ALIAS:
+   cups
+
+OPTIONS:
+   -l      URL to which logs for bound applications will be streamed
+   -p      Credentials, provided inline or in a file, to be exposed in the VCAP_SERVICES environment variable for bound applications
+   -r      URL to which requests for bound routes will be forwarded. Scheme for this URL must be https
+
+SEE ALSO:
+   bind-service, services
+NAME:
+   update-user-provided-service - Update user-provided service instance
+
+USAGE:
+   cf update-user-provided-service SERVICE_INSTANCE [-p CREDENTIALS] [-l SYSLOG_DRAIN_URL] [-r ROUTE_SERVICE_URL]
+
+   Pass comma separated credential parameter names to enable interactive mode:
+   cf update-user-provided-service SERVICE_INSTANCE -p "comma, separated, parameter, names"
+
+   Pass credential parameters as JSON to create a service non-interactively:
+   cf update-user-provided-service SERVICE_INSTANCE -p '{"key1":"value1","key2":"value2"}'
+
+   Specify a path to a file containing JSON:
+   cf update-user-provided-service SERVICE_INSTANCE -p PATH_TO_FILE
+
+EXAMPLES:
+   cf update-user-provided-service my-db-mine -p '{"username":"admin", "password":"pa55woRD"}'
+   cf update-user-provided-service my-db-mine -p /path/to/credentials.json
+   cf update-user-provided-service my-drain-service -l syslog://example.com
+   cf update-user-provided-service my-route-service -r https://example.com
+
+ALIAS:
+   uups
+
+OPTIONS:
+   -l      URL to which logs for bound applications will be streamed
+   -p      Credentials, provided inline or in a file, to be exposed in the VCAP_SERVICES environment variable for bound applications
+   -r      URL to which requests for bound routes will be forwarded. Scheme for this URL must be https
+
+SEE ALSO:
+   rename-service, services, update-service
+NAME:
+   orgs - List all orgs
+
+USAGE:
+   cf orgs
+
+ALIAS:
+   o
+NAME:
+   org - Show org info
+
+USAGE:
+   cf org ORG [--guid]
+
+OPTIONS:
+   --guid      Retrieve and display the given org's guid.  All other output for the org is suppressed.
+
+SEE ALSO:
+   org-users, orgs
+NAME:
+   create-org - Create an org
+
+USAGE:
+   cf create-org ORG
+
+ALIAS:
+   co
+
+OPTIONS:
+   -q      Quota to assign to the newly created org (excluding this option results in assignment of default quota)
+
+SEE ALSO:
+   create-space, orgs, quotas, set-org-role
+NAME:
+   delete-org - Delete an org
+
+USAGE:
+   cf delete-org ORG [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+NAME:
+   rename-org - Rename an org
+
+USAGE:
+   cf rename-org ORG NEW_ORG
+NAME:
+   spaces - List all spaces in an org
+
+USAGE:
+   cf spaces
+
+SEE ALSO:
+   target
+NAME:
+   space - Show space info
+
+USAGE:
+   cf space SPACE [--guid] [--security-group-rules]
+
+OPTIONS:
+   --guid                      Retrieve and display the given space's guid.  All other output for the space is suppressed.
+   --security-group-rules      Retrieve the rules for all the security groups associated with the space.
+
+SEE ALSO:
+   set-space-isolation-segment, space-quota, space-users
+NAME:
+   create-space - Create a space
+
+USAGE:
+   cf create-space SPACE [-o ORG] [-q SPACE_QUOTA]
+
+OPTIONS:
+   -o      Organization
+   -q      Quota to assign to the newly created space
+
+SEE ALSO:
+   set-space-isolation-segment, space-quotas, spaces, target
+NAME:
+   delete-space - Delete a space
+
+USAGE:
+   cf delete-space SPACE [-o ORG] [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+   -o      Delete space within specified org
+NAME:
+   rename-space - Rename a space
+
+USAGE:
+   cf rename-space SPACE NEW_SPACE
+NAME:
+   allow-space-ssh - Allow SSH access for the space
+
+USAGE:
+   cf allow-space-ssh SPACE_NAME
+
+SEE ALSO:
+   enable-ssh, space-ssh-allowed, ssh, ssh-enabled
+NAME:
+   disallow-space-ssh - Disallow SSH access for the space
+
+USAGE:
+   cf disallow-space-ssh SPACE_NAME
+
+SEE ALSO:
+   disable-ssh, space-ssh-allowed, ssh, ssh-enabled
+NAME:
+   space-ssh-allowed - Reports whether SSH is allowed in a space
+
+USAGE:
+   cf space-ssh-allowed SPACE_NAME
+
+SEE ALSO:
+   allow-space-ssh, ssh-enabled, ssh
+NAME:
+   domains - List domains in the target org
+
+USAGE:
+   cf domains
+
+SEE ALSO:
+   create-route, router-groups, routes
+NAME:
+   create-domain - Create a domain in an org for later use
+
+USAGE:
+   cf create-domain ORG DOMAIN
+
+SEE ALSO:
+   create-shared-domain, domains, router-groups, share-private-domain
+NAME:
+   delete-domain - Delete a domain
+
+USAGE:
+   cf delete-domain DOMAIN [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   delete-shared-domain, domains, unshare-private-domain
+NAME:
+   create-shared-domain - Create a domain that can be used by all orgs (admin-only)
+
+USAGE:
+   cf create-shared-domain DOMAIN [--router-group ROUTER_GROUP]
+
+OPTIONS:
+   --router-group      Routes for this domain will be configured only on the specified router group
+
+SEE ALSO:
+   create-domain, domains, router-groups
+NAME:
+   delete-shared-domain - Delete a shared domain
+
+USAGE:
+   cf delete-shared-domain DOMAIN [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   delete-domain, domains
+NAME:
+   router-groups - List router groups
+
+USAGE:
+   cf router-groups
+
+SEE ALSO:
+   create-domain, domains
+NAME:
+   routes - List all routes in the current space or the current organization
+
+USAGE:
+   cf routes [--orglevel]
+
+ALIAS:
+   r
+
+OPTIONS:
+   --orglevel      List all the routes for all spaces of current organization
+
+SEE ALSO:
+   check-route, domains, map-route, unmap-route
+NAME:
+   create-route - Create a url route in a space for later use
+
+USAGE:
+   Create an HTTP route:
+      cf create-route SPACE DOMAIN [--hostname HOSTNAME] [--path PATH]
+
+   Create a TCP route:
+      cf create-route SPACE DOMAIN (--port PORT | --random-port)
+
+EXAMPLES:
+   cf create-route my-space example.com                             # example.com
+   cf create-route my-space example.com --hostname myapp            # myapp.example.com
+   cf create-route my-space example.com --hostname myapp --path foo # myapp.example.com/foo
+   cf create-route my-space example.com --port 5000                 # example.com:5000
+
+OPTIONS:
+   --hostname, -n      Hostname for the HTTP route (required for shared domains)
+   --path              Path for the HTTP route
+   --port              Port for the TCP route
+   --random-port       Create a random port for the TCP route
+
+SEE ALSO:
+   check-route, domains, map-route
+NAME:
+   check-route - Perform a simple check to determine whether a route currently exists or not
+
+USAGE:
+   cf check-route HOST DOMAIN [--path PATH]
+
+EXAMPLES:
+   cf check-route myhost example.com            # example.com
+   cf check-route myhost example.com --path foo # myhost.example.com/foo
+
+OPTIONS:
+   --path      Path for the route
+
+SEE ALSO:
+   create-route, delete-route, routes
+NAME:
+   map-route - Add a url route to an app
+
+USAGE:
+   Map an HTTP route:
+      cf map-route APP_NAME DOMAIN [--hostname HOSTNAME] [--path PATH]
+
+   Map a TCP route:
+      cf map-route APP_NAME DOMAIN (--port PORT | --random-port)
+
+EXAMPLES:
+   cf map-route my-app example.com                              # example.com
+   cf map-route my-app example.com --hostname myhost            # myhost.example.com
+   cf map-route my-app example.com --hostname myhost --path foo # myhost.example.com/foo
+   cf map-route my-app example.com --port 5000                  # example.com:5000
+
+OPTIONS:
+   --hostname, -n      Hostname for the HTTP route (required for shared domains)
+   --path              Path for the HTTP route
+   --port              Port for the TCP route
+   --random-port       Create a random port for the TCP route
+
+SEE ALSO:
+   create-route, routes
+NAME:
+   unmap-route - Remove a url route from an app
+
+USAGE:
+   Unmap an HTTP route:
+      cf unmap-route APP_NAME DOMAIN [--hostname HOSTNAME] [--path PATH]
+
+   Unmap a TCP route:
+      cf unmap-route APP_NAME DOMAIN --port PORT
+
+EXAMPLES:
+   cf unmap-route my-app example.com                              # example.com
+   cf unmap-route my-app example.com --hostname myhost            # myhost.example.com
+   cf unmap-route my-app example.com --hostname myhost --path foo # myhost.example.com/foo
+   cf unmap-route my-app example.com --port 5000                  # example.com:5000
+
+OPTIONS:
+   --hostname, -n      Hostname used to identify the HTTP route
+   --path              Path used to identify the HTTP route
+   --port              Port used to identify the TCP route
+
+SEE ALSO:
+   delete-route, routes
+NAME:
+   delete-route - Delete a route
+
+USAGE:
+   Delete an HTTP route:
+      cf delete-route DOMAIN [--hostname HOSTNAME] [--path PATH] [-f]
+
+   Delete a TCP route:
+      cf delete-route DOMAIN --port PORT [-f]
+
+EXAMPLES:
+   cf delete-route example.com                              # example.com
+   cf delete-route example.com --hostname myhost            # myhost.example.com
+   cf delete-route example.com --hostname myhost --path foo # myhost.example.com/foo
+   cf delete-route example.com --port 5000                  # example.com:5000
+
+OPTIONS:
+   -f                  Force deletion without confirmation
+   --hostname, -n      Hostname used to identify the HTTP route
+   --path              Path used to identify the HTTP route
+   --port              Port used to identify the TCP route
+
+SEE ALSO:
+   delete-orphaned-routes, routes, unmap-route
+NAME:
+   delete-orphaned-routes - Delete all orphaned routes (i.e. those that are not mapped to an app)
+
+USAGE:
+   cf delete-orphaned-routes [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   delete-route, routes
+NAME:
+   network-policies - List direct network traffic policies
+
+USAGE:
+   cf network-policies [--source SOURCE_APP]
+
+OPTIONS:
+   --source      Source app to filter results by
+
+SEE ALSO:
+   add-network-policy, apps, remove-network-policy
+NAME:
+   add-network-policy - Create policy to allow direct network traffic from one app to another
+
+USAGE:
+   cf add-network-policy SOURCE_APP --destination-app DESTINATION_APP [(--protocol (tcp | udp) --port RANGE)]
+
+EXAMPLES:
+   cf add-network-policy frontend --destination-app backend --protocol tcp --port 8081
+   cf add-network-policy frontend --destination-app backend --protocol tcp --port 8080-8090
+
+OPTIONS:
+   --destination-app      Name of app to connect to
+   --port                 Port or range of ports for connection to destination app (Default: 8080)
+   --protocol             Protocol to connect apps with (Default: tcp)
+
+SEE ALSO:
+   apps, network-policies
+NAME:
+   remove-network-policy - Remove network traffic policy of an app
+
+USAGE:
+   cf remove-network-policy SOURCE_APP --destination-app DESTINATION_APP --protocol (tcp | udp) --port RANGE
+
+EXAMPLES:
+   cf remove-network-policy frontend --destination-app backend --protocol tcp --port 8081
+   cf remove-network-policy frontend --destination-app backend --protocol tcp --port 8080-8090
+
+OPTIONS:
+   --destination-app      Name of app to connect to
+   --port                 Port or range of ports that destination app is connected with
+   --protocol             Protocol that apps are connected with
+
+SEE ALSO:
+   apps, network-policies
+NAME:
+   buildpacks - List all buildpacks
+
+USAGE:
+   cf buildpacks
+
+SEE ALSO:
+   push
+NAME:
+   create-buildpack - Create a buildpack
+
+USAGE:
+   cf create-buildpack BUILDPACK PATH POSITION [--enable|--disable]
+
+TIP:
+   Path should be a zip file, a url to a zip file, or a local directory. Position is a positive integer, sets priority, and is sorted from lowest to highest.
+
+OPTIONS:
+   --disable      Disable the buildpack from being used for staging
+   --enable       Enable the buildpack to be used for staging
+
+SEE ALSO:
+   buildpacks, push
+NAME:
+   update-buildpack - Update a buildpack
+
+USAGE:
+   cf update-buildpack BUILDPACK [-p PATH] [-i POSITION] [--enable|--disable] [--lock|--unlock]
+
+TIP:
+   Path should be a zip file, a url to a zip file, or a local directory. Position is a positive integer, sets priority, and is sorted from lowest to highest.
+
+OPTIONS:
+   --disable      Disable the buildpack from being used for staging
+   --enable       Enable the buildpack to be used for staging
+   -i             The order in which the buildpacks are checked during buildpack auto-detection
+   --lock         Lock the buildpack to prevent updates
+   -p             Path to directory or zip file
+   --unlock       Unlock the buildpack to enable updates
+
+SEE ALSO:
+   buildpacks, rename-buildpack
+NAME:
+   rename-buildpack - Rename a buildpack
+
+USAGE:
+   cf rename-buildpack BUILDPACK_NAME NEW_BUILDPACK_NAME
+
+SEE ALSO:
+   update-buildpack
+NAME:
+   delete-buildpack - Delete a buildpack
+
+USAGE:
+   cf delete-buildpack BUILDPACK [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   buildpacks
+NAME:
+   create-user - Create a new user
+
+USAGE:
+   cf create-user USERNAME PASSWORD
+   cf create-user USERNAME --origin ORIGIN
+
+EXAMPLES:
+   cf create-user j.smith@example.com S3cr3t                  # internal user
+   cf create-user j.smith@example.com --origin ldap           # LDAP user
+   cf create-user j.smith@example.com --origin provider-alias # SAML or OpenID Connect federated user
+
+OPTIONS:
+   --origin      Origin for mapping a user account to a user in an external identity provider
+
+SEE ALSO:
+   passwd, set-org-role, set-space-role
+NAME:
+   delete-user - Delete a user
+
+USAGE:
+   cf delete-user USERNAME [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   org-users
+NAME:
+   org-users - Show org users by role
+
+USAGE:
+   cf org-users ORG
+
+OPTIONS:
+   -a      List all users in the org
+
+SEE ALSO:
+   orgs
+NAME:
+   set-org-role - Assign an org role to a user
+
+USAGE:
+   cf set-org-role USERNAME ORG ROLE
+
+ROLES:
+   'OrgManager' - Invite and manage users, select and change plans, and set spending limits
+   'BillingManager' - Create and manage the billing account and payment info
+   'OrgAuditor' - Read-only access to org info and reports
+
+SEE ALSO:
+   org-users, set-space-role
+NAME:
+   unset-org-role - Remove an org role from a user
+
+USAGE:
+   cf unset-org-role USERNAME ORG ROLE
+
+ROLES:
+   'OrgManager' - Invite and manage users, select and change plans, and set spending limits
+   'BillingManager' - Create and manage the billing account and payment info
+   'OrgAuditor' - Read-only access to org info and reports
+
+SEE ALSO:
+   delete-user, org-users
+NAME:
+   space-users - Show space users by role
+
+USAGE:
+   cf space-users ORG SPACE
+
+SEE ALSO:
+   org-users, orgs, set-space-role, spaces, unset-space-role
+NAME:
+   set-space-role - Assign a space role to a user
+
+USAGE:
+   cf set-space-role USERNAME ORG SPACE ROLE
+
+ROLES:
+   'SpaceManager' - Invite and manage users, and enable features for a given space
+   'SpaceDeveloper' - Create and manage apps and services, and see logs and reports
+   'SpaceAuditor' - View logs, reports, and settings on this space
+
+SEE ALSO:
+   space-users
+NAME:
+   unset-space-role - Remove a space role from a user
+
+USAGE:
+   cf unset-space-role USERNAME ORG SPACE ROLE
+
+ROLES:
+   'SpaceManager' - Invite and manage users, and enable features for a given space
+   'SpaceDeveloper' - Create and manage apps and services, and see logs and reports
+   'SpaceAuditor' - View logs, reports, and settings on this space
+
+SEE ALSO:
+   space-users
+NAME:
+   quotas - List available usage quotas
+
+USAGE:
+   cf quotas
+NAME:
+   quota - Show quota info
+
+USAGE:
+   cf quota QUOTA
+
+SEE ALSO:
+   org, quotas
+NAME:
+   set-quota - Assign a quota to an org
+
+USAGE:
+   cf set-quota ORG QUOTA
+
+TIP:
+   View allowable quotas with 'cf quotas'
+
+SEE ALSO:
+   orgs, quotas
+NAME:
+   create-quota - Define a new resource quota
+
+USAGE:
+   cf create-quota QUOTA [-m TOTAL_MEMORY] [-i INSTANCE_MEMORY] [-r ROUTES] [-s SERVICE_INSTANCES] [-a APP_INSTANCES] [--allow-paid-service-plans] [--reserved-route-ports RESERVED_ROUTE_PORTS]
+
+OPTIONS:
+   -a                              Total number of application instances. -1 represents an unlimited amount. (Default: unlimited)
+   --allow-paid-service-plans      Can provision instances of paid service plans
+   -i                              Maximum amount of memory an application instance can have (e.g. 1024M, 1G, 10G). -1 represents an unlimited amount.
+   -m                              Total amount of memory a space can have (e.g. 1024M, 1G, 10G)
+   -r                              Total number of routes
+   --reserved-route-ports          Maximum number of routes that may be created with reserved ports (Default: 0)
+   -s                              Total number of service instances
+
+SEE ALSO:
+   create-org, quotas, set-quota
+NAME:
+   delete-quota - Delete a quota
+
+USAGE:
+   cf delete-quota QUOTA [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   quotas
+NAME:
+   update-quota - Update an existing resource quota
+
+USAGE:
+   cf update-quota QUOTA [-m TOTAL_MEMORY] [-i INSTANCE_MEMORY] [-n NEW_NAME] [-r ROUTES] [-s SERVICE_INSTANCES] [-a APP_INSTANCES] [--allow-paid-service-plans | --disallow-paid-service-plans] [--reserved-route-ports RESERVED_ROUTE_PORTS]
+
+OPTIONS:
+   -a                                 Total number of application instances. -1 represents an unlimited amount.
+   --allow-paid-service-plans         Can provision instances of paid service plans
+   --disallow-paid-service-plans      Cannot provision instances of paid service plans
+   -i                                 Maximum amount of memory an application instance can have (e.g. 1024M, 1G, 10G)
+   -m                                 Total amount of memory (e.g. 1024M, 1G, 10G)
+   -n                                 New name
+   -r                                 Total number of routes
+   --reserved-route-ports             Maximum number of routes that may be created with reserved ports
+   -s                                 Total number of service instances
+
+SEE ALSO:
+   org, quota
+NAME:
+   share-private-domain - Share a private domain with an org
+
+USAGE:
+   cf share-private-domain ORG DOMAIN
+
+SEE ALSO:
+   domains, unshare-private-domain
+NAME:
+   unshare-private-domain - Unshare a private domain with an org
+
+USAGE:
+   cf unshare-private-domain ORG DOMAIN
+
+SEE ALSO:
+   delete-domain, domains
+NAME:
+   space-quotas - List available space resource quotas
+
+USAGE:
+   cf space-quotas
+
+SEE ALSO:
+   set-space-quota
+NAME:
+   space-quota - Show space quota info
+
+USAGE:
+   cf space-quota SPACE_QUOTA_NAME
+NAME:
+   create-space-quota - Define a new space resource quota
+
+USAGE:
+   cf create-space-quota QUOTA [-i INSTANCE_MEMORY] [-m MEMORY] [-r ROUTES] [-s SERVICE_INSTANCES] [-a APP_INSTANCES] [--allow-paid-service-plans] [--reserved-route-ports RESERVED_ROUTE_PORTS]
+
+OPTIONS:
+   -a                              Total number of application instances. -1 represents an unlimited amount. (Default: unlimited)
+   --allow-paid-service-plans      Can provision instances of paid service plans (Default: disallowed)
+   -i                              Maximum amount of memory an application instance can have (e.g. 1024M, 1G, 10G). -1 represents an unlimited amount. (Default: unlimited)
+   -m                              Total amount of memory a space can have (e.g. 1024M, 1G, 10G)
+   -r                              Total number of routes
+   --reserved-route-ports          Maximum number of routes that may be created with reserved ports (Default: 0)
+   -s                              Total number of service instances
+
+SEE ALSO:
+   quotas, space-quotas
+NAME:
+   update-space-quota - Update an existing space quota
+
+USAGE:
+   cf update-space-quota SPACE_QUOTA [-i INSTANCE_MEMORY] [-m MEMORY] [-n NAME] [-r ROUTES] [-s SERVICE_INSTANCES] [-a APP_INSTANCES] [--allow-paid-service-plans | --disallow-paid-service-plans] [--reserved-route-ports RESERVED_ROUTE_PORTS]
+
+OPTIONS:
+   -a                                 Total number of application instances. -1 represents an unlimited amount.
+   --allow-paid-service-plans         Can provision instances of paid service plans
+   --disallow-paid-service-plans      Can not provision instances of paid service plans
+   -i                                 Maximum amount of memory an application instance can have (e.g. 1024M, 1G, 10G). -1 represents an unlimited amount.
+   -m                                 Total amount of memory a space can have (e.g. 1024M, 1G, 10G)
+   -n                                 New name
+   -r                                 Total number of routes
+   --reserved-route-ports             Maximum number of routes that may be created with reserved ports
+   -s                                 Total number of service instances
+
+SEE ALSO:
+   space-quota, space-quotas
+NAME:
+   delete-space-quota - Delete a space quota definition and unassign the space quota from all spaces
+
+USAGE:
+   cf delete-space-quota SPACE_QUOTA_NAME [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   space-quotas
+NAME:
+   set-space-quota - Assign a space quota definition to a space
+
+USAGE:
+   cf set-space-quota SPACE_NAME SPACE_QUOTA_NAME
+
+SEE ALSO:
+   space, space-quotas, spaces
+NAME:
+   unset-space-quota - Unassign a quota from a space
+
+USAGE:
+   cf unset-space-quota SPACE SPACE_QUOTA
+
+SEE ALSO:
+   space
+NAME:
+   service-auth-tokens - List service auth tokens
+
+USAGE:
+   cf service-auth-tokens
+NAME:
+   create-service-auth-token - Create a service auth token
+
+USAGE:
+   cf create-service-auth-token LABEL PROVIDER TOKEN
+NAME:
+   update-service-auth-token - Update a service auth token
+
+USAGE:
+   cf update-service-auth-token LABEL PROVIDER TOKEN
+NAME:
+   delete-service-auth-token - Delete a service auth token
+
+USAGE:
+   cf delete-service-auth-token LABEL PROVIDER [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+NAME:
+   service-brokers - List service brokers
+
+USAGE:
+   cf service-brokers
+
+SEE ALSO:
+   delete-service-broker, disable-service-access, enable-service-access
+NAME:
+   create-service-broker - Create a service broker
+
+USAGE:
+   cf create-service-broker SERVICE_BROKER USERNAME PASSWORD URL [--space-scoped]
+
+ALIAS:
+   csb
+
+OPTIONS:
+   --space-scoped      Make the broker's service plans only visible within the targeted space
+
+SEE ALSO:
+   enable-service-access, service-brokers, target
+NAME:
+   update-service-broker - Update a service broker
+
+USAGE:
+   cf update-service-broker SERVICE_BROKER USERNAME PASSWORD URL
+
+SEE ALSO:
+   rename-service-broker, service-brokers
+NAME:
+   delete-service-broker - Delete a service broker
+
+USAGE:
+   cf delete-service-broker SERVICE_BROKER [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   delete-service, purge-service-offering, service-brokers
+NAME:
+   rename-service-broker - Rename a service broker
+
+USAGE:
+   cf rename-service-broker SERVICE_BROKER NEW_SERVICE_BROKER
+
+SEE ALSO:
+   service-brokers, update-service-broker
+NAME:
+   migrate-service-instances - Migrate service instances from one service plan to another
+
+USAGE:
+   cf migrate-service-instances v1_SERVICE v1_PROVIDER v1_PLAN v2_SERVICE v2_PLAN
+
+WARNING: This operation is internal to Cloud Foundry; service brokers will not be contacted and resources for service instances will not be altered. The primary use case for this operation is to replace a service broker which implements the v1 Service Broker API with a broker which implements the v2 API by remapping service instances from v1 plans to v2 plans.  We recommend making the v1 plan private or shutting down the v1 broker to prevent additional instances from being created. Once service instances have been migrated, the v1 services and plans can be removed from Cloud Foundry.
+
+OPTIONS:
+   -f      Force migration without confirmation
+NAME:
+   purge-service-offering - Recursively remove a service and child objects from Cloud Foundry database without making requests to a service broker
+
+USAGE:
+   cf purge-service-offering SERVICE [-p PROVIDER] [-f]
+
+WARNING: This operation assumes that the service broker responsible for this service offering is no longer available, and all service instances have been deleted, leaving orphan records in Cloud Foundry's database. All knowledge of the service will be removed from Cloud Foundry, including service instances and service bindings. No attempt will be made to contact the service broker; running this command without destroying the service broker will cause orphan service instances. After running this command you may want to run either delete-service-auth-token or delete-service-broker to complete the cleanup.
+
+OPTIONS:
+   -f      Force deletion without confirmation
+   -p      Provider
+
+SEE ALSO:
+   marketplace, purge-service-instance, service-brokers
+NAME:
+   purge-service-instance - Recursively remove a service instance and child objects from Cloud Foundry database without making requests to a service broker
+
+USAGE:
+   cf purge-service-instance SERVICE_INSTANCE
+
+WARNING: This operation assumes that the service broker responsible for this service instance is no longer available or is not responding with a 200 or 410, and the service instance has been deleted, leaving orphan records in Cloud Foundry's database. All knowledge of the service instance will be removed from Cloud Foundry, including service bindings and service keys.
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   delete-service, service-brokers, services
+NAME:
+   service-access - List service access settings
+
+USAGE:
+   cf service-access [-b BROKER] [-e SERVICE] [-o ORG]
+
+OPTIONS:
+   -b      Access for plans of a particular broker
+   -e      Access for service name of a particular service offering
+   -o      Plans accessible by a particular organization
+
+SEE ALSO:
+   disable-service-access, enable-service-access, marketplace, service-brokers
+NAME:
+   enable-service-access - Enable access to a service or service plan for one or all orgs
+
+USAGE:
+   cf enable-service-access SERVICE [-p PLAN] [-o ORG]
+
+OPTIONS:
+   -o      Enable access for a specified organization
+   -p      Enable access to a specified service plan
+
+SEE ALSO:
+   marketplace, service-access, service-brokers
+NAME:
+   disable-service-access - Disable access to a service or service plan for one or all orgs
+
+USAGE:
+   cf disable-service-access SERVICE [-p PLAN] [-o ORG]
+
+OPTIONS:
+   -o      Disable access for a specified organization
+   -p      Disable access to a specified service plan
+
+SEE ALSO:
+   marketplace, service-access, service-brokers
+NAME:
+   security-group - Show a single security group
+
+USAGE:
+   cf security-group SECURITY_GROUP
+
+SEE ALSO:
+   bind-running-security-group, bind-security-group, bind-staging-security-group
+NAME:
+   security-groups - List all security groups
+
+USAGE:
+   cf security-groups
+
+SEE ALSO:
+   bind-running-security-group, bind-security-group, bind-staging-security-group, security-group
+NAME:
+   create-security-group - Create a security group
+
+USAGE:
+   cf create-security-group SECURITY_GROUP PATH_TO_JSON_RULES_FILE
+
+   The provided path can be an absolute or relative path to a file.  The file should have
+   a single array with JSON objects inside describing the rules.  The JSON Base Object is
+   omitted and only the square brackets and associated child object are required in the file.
+
+   Valid json file example:
+   [
+     {
+       "protocol": "tcp",
+       "destination": "10.0.11.0/24",
+       "ports": "80,443",
+       "description": "Allow http and https traffic from ZoneA"
+     }
+   ]
+
+SEE ALSO:
+   bind-running-security-group, bind-security-group, bind-staging-security-group, security-groups
+NAME:
+   update-security-group - Update a security group
+
+USAGE:
+   cf update-security-group SECURITY_GROUP PATH_TO_JSON_RULES_FILE
+
+   The provided path can be an absolute or relative path to a file.
+   It should have a single array with JSON objects inside describing the rules.
+
+   Valid json file example:
+   [
+     {
+       "protocol": "tcp",
+       "destination": "10.0.11.0/24",
+       "ports": "80,443",
+       "description": "Allow http and https traffic from ZoneA"
+     }
+   ]
+
+TIP: Changes will not apply to existing running applications until they are restarted.
+
+SEE ALSO:
+   restage, security-groups
+NAME:
+   delete-security-group - Deletes a security group
+
+USAGE:
+   cf delete-security-group SECURITY_GROUP [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   security-groups
+NAME:
+   bind-security-group - Bind a security group to a particular space, or all existing spaces of an org
+
+USAGE:
+   cf bind-security-group SECURITY_GROUP ORG [SPACE] [--lifecycle (running | staging)]
+
+TIP: Changes require an app restart (for running) or restage (for staging) to apply to existing applications.
+
+OPTIONS:
+   --lifecycle      Lifecycle phase the group applies to (Default: running)
+
+SEE ALSO:
+   apps, bind-running-security-group, bind-staging-security-group, restart, security-groups
+NAME:
+   unbind-security-group - Unbind a security group from a space
+
+USAGE:
+   cf unbind-security-group SECURITY_GROUP ORG SPACE [--lifecycle (running | staging)]
+
+TIP: Changes require an app restart (for running) or restage (for staging) to apply to existing applications.
+
+OPTIONS:
+   --lifecycle      Lifecycle phase the group applies to (Default: running)
+
+SEE ALSO:
+   apps, restart, security-groups
+NAME:
+   bind-staging-security-group - Bind a security group to the list of security groups to be used for staging applications
+
+USAGE:
+   cf bind-staging-security-group SECURITY_GROUP
+
+SEE ALSO:
+   apps, bind-running-security-group, bind-security-group, restart, security-groups, staging-security-groups
+NAME:
+   staging-security-groups - List security groups in the staging set for applications
+
+USAGE:
+   cf staging-security-groups
+
+SEE ALSO:
+   bind-staging-security-group, security-group, unbind-staging-security-group
+NAME:
+   unbind-staging-security-group - Unbind a security group from the set of security groups for staging applications
+
+USAGE:
+   cf unbind-staging-security-group SECURITY_GROUP
+
+TIP: Changes will not apply to existing running applications until they are restarted.
+
+SEE ALSO:
+   apps, restart, staging-security-groups
+NAME:
+   bind-running-security-group - Bind a security group to the list of security groups to be used for running applications
+
+USAGE:
+   cf bind-running-security-group SECURITY_GROUP
+
+TIP: Changes will not apply to existing running applications until they are restarted.
+
+SEE ALSO:
+   apps, bind-security-group, bind-staging-security-group, restart, running-security-groups, security-groups
+NAME:
+   running-security-groups - List security groups in the set of security groups for running applications
+
+USAGE:
+   cf running-security-groups
+
+SEE ALSO:
+   bind-running-security-group, security-group, unbind-running-security-group
+NAME:
+   unbind-running-security-group - Unbind a security group from the set of security groups for running applications
+
+USAGE:
+   cf unbind-running-security-group SECURITY_GROUP
+
+TIP: Changes will not apply to existing running applications until they are restarted.
+
+SEE ALSO:
+   apps, restart, running-security-groups
+NAME:
+   running-environment-variable-group - Retrieve the contents of the running environment variable group
+
+USAGE:
+   cf running-environment-variable-group
+
+ALIAS:
+   revg
+
+SEE ALSO:
+   env, staging-environment-variable-group
+NAME:
+   staging-environment-variable-group - Retrieve the contents of the staging environment variable group
+
+USAGE:
+   cf staging-environment-variable-group
+
+ALIAS:
+   sevg
+
+SEE ALSO:
+   env, running-environment-variable-group
+NAME:
+   set-staging-environment-variable-group - Pass parameters as JSON to create a staging environment variable group
+
+USAGE:
+   cf set-staging-environment-variable-group '{"name":"value","name":"value"}'
+
+ALIAS:
+   ssevg
+
+SEE ALSO:
+   set-env, staging-environment-variable-group
+NAME:
+   set-running-environment-variable-group - Pass parameters as JSON to create a running environment variable group
+
+USAGE:
+   cf set-running-environment-variable-group '{"name":"value","name":"value"}'
+
+ALIAS:
+   srevg
+
+SEE ALSO:
+   running-environment-variable-group, set-env
+NAME:
+   isolation-segments - List all isolation segments
+
+USAGE:
+   cf isolation-segments
+
+SEE ALSO:
+   create-isolation-segment, enable-org-isolation
+NAME:
+   create-isolation-segment - Create an isolation segment
+
+USAGE:
+   cf create-isolation-segment SEGMENT_NAME
+
+NOTES:
+   The isolation segment name must match the placement tag applied to the Diego cell.
+
+SEE ALSO:
+   enable-org-isolation, isolation-segments
+NAME:
+   delete-isolation-segment - Delete an isolation segment
+
+USAGE:
+   cf delete-isolation-segment SEGMENT_NAME
+
+OPTIONS:
+   -f      Force deletion without confirmation
+
+SEE ALSO:
+   disable-org-isolation, isolation-segments
+NAME:
+   enable-org-isolation - Entitle an organization to an isolation segment
+
+USAGE:
+   cf enable-org-isolation ORG_NAME SEGMENT_NAME
+
+SEE ALSO:
+   create-isolation-segment, isolation-segments, set-org-default-isolation-segment, set-space-isolation-segment
+NAME:
+   disable-org-isolation - Revoke an organization's entitlement to an isolation segment
+
+USAGE:
+   cf disable-org-isolation ORG_NAME SEGMENT_NAME
+
+SEE ALSO:
+   enable-org-isolation, isolation-segments
+NAME:
+   set-org-default-isolation-segment - Set the default isolation segment used for apps in spaces in an org
+
+USAGE:
+   cf set-org-default-isolation-segment ORG_NAME SEGMENT_NAME
+
+SEE ALSO:
+   org, set-space-isolation-segment
+NAME:
+   reset-org-default-isolation-segment - Reset the default isolation segment used for apps in spaces of an org
+
+USAGE:
+   cf reset-org-default-isolation-segment ORG_NAME
+
+SEE ALSO:
+   org, restart
+NAME:
+   set-space-isolation-segment - Assign the isolation segment for a space
+
+USAGE:
+   cf set-space-isolation-segment SPACE_NAME SEGMENT_NAME
+
+SEE ALSO:
+   org, reset-space-isolation-segment, restart, set-org-default-isolation-segment, space
+NAME:
+   reset-space-isolation-segment - Reset the space's isolation segment to the org default
+
+USAGE:
+   cf reset-space-isolation-segment SPACE_NAME
+
+SEE ALSO:
+   org, restart, space
+NAME:
+   feature-flags - Retrieve list of feature flags with status
+
+USAGE:
+   cf feature-flags
+
+SEE ALSO:
+   disable-feature-flag, enable-feature-flag
+NAME:
+   feature-flag - Retrieve an individual feature flag with status
+
+USAGE:
+   cf feature-flag FEATURE_NAME
+
+SEE ALSO:
+   disable-feature-flag, enable-feature-flag, feature-flags
+NAME:
+   enable-feature-flag - Allow use of a feature
+
+USAGE:
+   cf enable-feature-flag FEATURE_NAME
+
+SEE ALSO:
+   disable-feature-flag, feature-flags
+NAME:
+   disable-feature-flag - Prevent use of a feature
+
+USAGE:
+   cf disable-feature-flag FEATURE_NAME
+
+SEE ALSO:
+   enable-feature-flag, feature-flags
+NAME:
+   curl - Executes a request to the targeted API endpoint
+
+USAGE:
+   cf curl PATH [-iv] [-X METHOD] [-H HEADER] [-d DATA] [--output FILE]
+
+   By default 'cf curl' will perform a GET to the specified PATH. If data
+   is provided via -d, a POST will be performed instead, and the Content-Type
+   will be set to application/json. You may override headers with -H and the
+   request method with -X.
+
+   For API documentation, please visit http://apidocs.cloudfoundry.org.
+
+EXAMPLES:
+   cf curl "/v2/apps" -X GET -H "Content-Type: application/x-www-form-urlencoded" -d 'q=name:myapp'
+   cf curl "/v2/apps" -d @/path/to/file
+
+OPTIONS:
+   -H            Custom headers to include in the request, flag can be specified multiple times
+   -X            HTTP method (GET,POST,PUT,DELETE,etc)
+   -d            HTTP data to include in the request body, or '@' followed by a file name to read the data from
+   -i            Include response headers in the output
+   --output      Write curl body to FILE instead of stdout
+NAME:
+   config - Write default values to the config
+
+USAGE:
+   cf config [--async-timeout TIMEOUT_IN_MINUTES] [--trace (true | false | path/to/file)] [--color (true | false)] [--locale (LOCALE | CLEAR)]
+
+OPTIONS:
+   --async-timeout      Timeout for async HTTP requests
+   --color              Enable or disable color
+   --locale             Set default locale. If LOCALE is 'CLEAR', previous locale is deleted.
+   --trace              Trace HTTP requests
+NAME:
+   oauth-token - Retrieve and display the OAuth token for the current session
+
+USAGE:
+   cf oauth-token
+
+SEE ALSO:
+   curl
+NAME:
+   ssh-code - Get a one time password for ssh clients
+
+USAGE:
+   cf ssh-code
+
+SEE ALSO:
+   curl, ssh
+NAME:
+   add-plugin-repo - Add a new plugin repository
+
+USAGE:
+   cf add-plugin-repo REPO_NAME URL
+
+EXAMPLES:
+   cf add-plugin-repo ExampleRepo https://example.com/repo
+
+SEE ALSO:
+   install-plugin, list-plugin-repos
+NAME:
+   remove-plugin-repo - Remove a plugin repository
+
+USAGE:
+   cf remove-plugin-repo REPO_NAME
+
+EXAMPLES:
+   cf remove-plugin-repo PrivateRepo
+
+SEE ALSO:
+   list-plugin-repos
+NAME:
+   list-plugin-repos - List all the added plugin repositories
+
+USAGE:
+   cf list-plugin-repos
+
+SEE ALSO:
+   add-plugin-repo, install-plugin
+NAME:
+   repo-plugins - List all available plugins in specified repository or in all added repositories
+
+USAGE:
+   cf repo-plugins [-r REPO_NAME]
+
+EXAMPLES:
+   cf repo-plugins -r PrivateRepo
+
+OPTIONS:
+   -r      Name of a registered repository
+
+SEE ALSO:
+   add-plugin-repo, delete-plugin-repo, install-plugin
+NAME:
+   plugins - List commands of installed plugins
+
+USAGE:
+   cf plugins [--checksum | --outdated]
+
+OPTIONS:
+   --checksum      Compute and show the sha1 value of the plugin binary file
+   --outdated      Search the plugin repositories for new versions of installed plugins
+
+SEE ALSO:
+   install-plugin, repo-plugins, uninstall-plugin
+NAME:
+   install-plugin - Install CLI plugin
+
+USAGE:
+   cf install-plugin PLUGIN_NAME [-r REPO_NAME] [-f]
+cf install-plugin LOCAL-PATH/TO/PLUGIN | URL [-f]
+
+WARNING:
+   Plugins are binaries written by potentially untrusted authors.
+   Install and use plugins at your own risk.
+
+EXAMPLES:
+   cf install-plugin ~/Downloads/plugin-foobar
+   cf install-plugin https://example.com/plugin-foobar_linux_amd64
+   cf install-plugin -r My-Repo plugin-echo
+
+OPTIONS:
+   -f      Force install of plugin without confirmation
+   -r      Restrict search for plugin to this registered repository
+
+SEE ALSO:
+   add-plugin-repo, list-plugin-repos, plugins
+NAME:
+   uninstall-plugin - Uninstall CLI plugin
+
+USAGE:
+   cf uninstall-plugin PLUGIN-NAME
+
+SEE ALSO:
+   plugins
+NAME:
+   v3-apps - List all apps in the target space
+
+USAGE:
+   cf v3-apps
+NAME:
+   v3-app - Display health and status for an app
+
+USAGE:
+   cf v3-app APP_NAME [--guid]
+
+OPTIONS:
+   --guid      Retrieve and display the given app's guid.  All other health and status output for the app is suppressed.
+NAME:
+   v3-create-app - Create a V3 App
+
+USAGE:
+   cf v3-create-app APP_NAME [--app-type (buildpack | docker)]
+
+OPTIONS:
+   --app-type      App lifecycle type to stage and run the app (Default: buildpack)
+NAME:
+   v3-push - Push a new app or sync changes to an existing app
+
+USAGE:
+   cf v3-push APP_NAME [-b BUILDPACK]... [-p APP_PATH] [--no-route] [--no-start]
+   cf v3-push APP_NAME --docker-image [REGISTRY_HOST:PORT/]IMAGE[:TAG] [--docker-username USERNAME] [--no-route] [--no-start]
+
+OPTIONS:
+   -b                      Custom buildpack by name (e.g. my-buildpack) or Git URL (e.g. 'https://github.com/cloudfoundry/java-buildpack.git') or Git URL with a branch or tag (e.g. 'https://github.com/cloudfoundry/java-buildpack.git#v3.3.0' for 'v3.3.0' tag). To use built-in buildpacks only, specify 'default' or 'null'
+   --docker-image, -o      Docker image to use (e.g. user/docker-image-name)
+   --docker-username       Repository username; used with password from environment variable CF_DOCKER_PASSWORD
+   --no-route              Do not map a route to this app
+   --no-start              Do not stage and start the app after pushing
+   -p                      Path to app directory or to a zip file of the contents of the app directory
+
+ENVIRONMENT:
+   CF_DOCKER_PASSWORD=          Password used for private docker repository
+   CF_STAGING_TIMEOUT=15        Max wait time for buildpack staging, in minutes
+   CF_STARTUP_TIMEOUT=5         Max wait time for app instance startup, in minutes
+NAME:
+   v3-scale - Change or view the instance count, disk space limit, and memory limit for an app
+
+USAGE:
+   cf v3-scale APP_NAME [--process PROCESS] [-i INSTANCES] [-k DISK] [-m MEMORY]
+
+OPTIONS:
+   -f             Force restart of app without prompt
+   -i             Number of instances
+   -k             Disk limit (e.g. 256M, 1024M, 1G)
+   -m             Memory limit (e.g. 256M, 1024M, 1G)
+   --process      App process to scale (Default: web)
+
+ENVIRONMENT:
+   CF_STARTUP_TIMEOUT=5         Max wait time for app instance startup, in minutes
+
+SEE ALSO:
+   v3-push
+NAME:
+   v3-delete - Delete a V3 App
+
+USAGE:
+   cf v3-delete APP_NAME [-f]
+
+OPTIONS:
+   -f      Force deletion without confirmation
+NAME:
+   v3-start - Start an app
+
+USAGE:
+   cf v3-start APP_NAME
+NAME:
+   v3-stop - Stop an app
+
+USAGE:
+   cf v3-stop APP_NAME
+NAME:
+   v3-restart - Stop all instances of the app, then start them again. This causes downtime.
+
+USAGE:
+   cf v3-restart APP_NAME
+
+ENVIRONMENT:
+   CF_STARTUP_TIMEOUT=5         Max wait time for app instance startup, in minutes
+NAME:
+   v3-stage - Create a new droplet for an app
+
+USAGE:
+   cf v3-stage APP_NAME --package-guid PACKAGE_GUID
+
+OPTIONS:
+   --package-guid      The guid of the package to stage
+
+ENVIRONMENT:
+   CF_STAGING_TIMEOUT=15        Max wait time for buildpack staging, in minutes
+NAME:
+   v3-restart-app-instance - Terminate, then instantiate an app instance
+
+USAGE:
+   cf v3-restart-app-instance APP_NAME INDEX [--process PROCESS]
+
+OPTIONS:
+   --process      Process to restart (Default: web)
+
+SEE ALSO:
+   v3-restart
+NAME:
+   v3-droplets - List droplets of an app
+
+USAGE:
+   cf v3-droplets APP_NAME
+NAME:
+   v3-set-droplet - Set the droplet used to run an app
+
+USAGE:
+   cf v3-set-droplet APP_NAME -d DROPLET_GUID
+
+OPTIONS:
+   --droplet-guid, -d      The guid of the droplet to use
+NAME:
+   v3-set-env - Set an env variable for an app
+
+USAGE:
+   cf v3-set-env APP_NAME ENV_VAR_NAME ENV_VAR_VALUE
+
+SEE ALSO:
+   set-running-environment-variable-group, set-staging-environment-variable-group, v3-apps, v3-env, v3-restart, v3-stage, v3-unset-env
+NAME:
+   v3-unset-env - Remove an env variable from an app
+
+USAGE:
+   cf v3-unset-env APP_NAME ENV_VAR_NAME
+
+SEE ALSO:
+   v3-apps, v3-env, v3-restart, v3-set-env, v3-stage
+NAME:
+   v3-get-health-check - Show the type of health check performed on an app
+
+USAGE:
+   cf v3-get-health-check APP_NAME
+NAME:
+   v3-set-health-check - Change type of health check performed on an app's process
+
+USAGE:
+   cf v3-set-health-check APP_NAME (process | port | http [--endpoint PATH]) [--process PROCESS]
+
+EXAMPLES:
+   cf v3-set-health-check worker-app process --process worker
+   cf v3-set-health-check my-web-app http --endpoint /foo
+
+OPTIONS:
+   --endpoint      Path on the app (Default: /)
+   --process       App process to update (Default: web)
+NAME:
+   v3-packages - List packages of an app
+
+USAGE:
+   cf v3-packages APP_NAME
+NAME:
+   v3-create-package - Uploads a V3 Package
+
+USAGE:
+   cf v3-create-package APP_NAME [-p APP_PATH | --docker-image [REGISTRY_HOST:PORT/]IMAGE[:TAG]]
+
+OPTIONS:
+   --docker-image, -o      Docker image to use (e.g. user/docker-image-name)
+   -p                      Path to app directory or to a zip file of the contents of the app directory
