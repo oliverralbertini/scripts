@@ -1,0 +1,11 @@
+session_name: main
+suppress_history: false
+windows:
+- window_name: fillmore
+  layout: tiled
+  panes:
+    - shell_command: ssh -t fillmore /usr/local/bin/tmuxp load lita
+- window_name: irc
+  layout: tiled
+  panes:
+    - shell_command: . ~/bin/yubishell.sh "ssh -t pb-droplet .local/bin/tmuxp load irc"
