@@ -1,0 +1,19 @@
+session_name: lita
+suppress_history: false
+windows:
+- window_name: vim
+  layout: tiled
+  shell_command_before:
+    - cd ~/workspace/lita-interrupt/lita-interrupt
+  panes:
+    - shell_command: vim -p {lib,spec}/lita/handlers/interrupt*.rb spec/spec_helper.rb
+- window_name: vipe
+  layout: tiled
+  shell_command_before:
+    - cd ~/workspace/lita-interrupt/lita-interrupt
+  panes:
+    - shell_command: vipe
+- window_name: redis-server
+  layout: tiled
+  panes:
+    - shell_command: redis-server --port 6379
