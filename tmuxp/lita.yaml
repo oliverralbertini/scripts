@@ -17,3 +17,4 @@ windows:
   layout: tiled
   panes:
     - shell_command: redis-server --port 6379
+    - shell_command: redis-server --port 1234
