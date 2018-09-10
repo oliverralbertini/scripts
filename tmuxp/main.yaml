@@ -1,10 +1,10 @@
 session_name: main
 suppress_history: false
 windows:
-- window_name: fillmore
+- window_name: bash
   layout: tiled
   panes:
-    - shell_command: ssh -t fillmore /usr/local/bin/tmuxp load lita
+    - shell_command:
 - window_name: irc
   layout: tiled
   panes:

@@ -19,7 +19,7 @@ until ping -c 1 "$HOST" >/dev/null 2>&1; do
   sleep 1
 done
 
-ssh -t "${HOST%%.*}" /usr/local/bin/tmuxp load main
+~/bin/yubishell.sh TERM=xterm-256color ssh -t "${HOST%%.*}" /usr/local/bin/tmuxp load main
 
 echo 'Stopping tunnelblick.'
 osascript <<END_OSASCRIPT >/dev/null
