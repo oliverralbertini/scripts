@@ -10,10 +10,9 @@ yubigit() {
   grep --color=auto "Host github.com" "$ssh_config" > /dev/null || \
     curl "$ssh_config_url" >> "$ssh_config"
   GPG_TTY=$(tty)
-  SSH_AUTH_SOCK=${HOME}/.gnupg/S.gpg-agent.ssh
+  SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   export GPG_TTY SSH_AUTH_SOCK
-  command kr > /dev/null 2>&1 && kr unpair > /dev/null
-  ssh github.com
+  ssh -T github.com
 }
 
 yubigit
